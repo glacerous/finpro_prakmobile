@@ -96,13 +96,13 @@ class _RootPageState extends State<RootPage> {
               children: [
                 _buildTabItem(
                   index: 0,
-                  label: 'Market',
-                  icon: Icons.storefront_outlined,
-                  activeIcon: Icons.storefront_rounded,
+                  label: 'Vault',
+                  icon: Icons.account_balance_wallet_outlined,
+                  activeIcon: Icons.account_balance_wallet_rounded,
                 ),
                 _buildTabItem(
                   index: 1,
-                  label: 'Vault',
+                  label: 'Assets',
                   icon: Icons.lock_outline_rounded,
                   activeIcon: Icons.lock_rounded,
                 ),

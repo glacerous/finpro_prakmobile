@@ -1,13 +1,16 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../controllers/cart_controller.dart';
 import '../../controllers/product_controller.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
 import '../../core/widgets/valto_mascot.dart';
+import '../../models/vault_item.dart';
 import '../../routes/app_routes.dart';
 import '../widgets/product_card.dart';
+import 'add_vault_item_page.dart';
 
 class HomePage extends StatelessWidget {
   final String nama;
@@ -23,7 +26,7 @@ class HomePage extends StatelessWidget {
       backgroundColor: VaultColors.background,
       body: CustomScrollView(
         slivers: [
-          // Scenic Alpine Dawn Hero Header (exact original VAULTED look)
+          // Scenic Alpine Dawn Hero Header
           SliverToBoxAdapter(
             child: Stack(
               children: [
@@ -55,7 +58,6 @@ class HomePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Top Bar: VAULTED wordmark + Cart pill
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -66,12 +68,6 @@ class HomePage extends StatelessWidget {
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 1.8,
                                 color: Colors.white,
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.black.withValues(alpha: 0.6),
-                                    blurRadius: 6,
-                                  ),
-                                ],
                               ),
                             ),
                             Obx(
@@ -91,17 +87,17 @@ class HomePage extends StatelessWidget {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       const Icon(
-                                        Icons.shopping_bag_outlined,
+                                        Icons.bookmark_outline_rounded,
                                         size: 15,
                                         color: VaultColors.ink,
                                       ),
                                       const SizedBox(width: 5),
                                       Text(
-                                        'BAG (${cartController.items.length})',
+                                        'WATCHLIST (${cartController.items.length})',
                                         style: VaultTypography.mono(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w700,
-                                          letterSpacing: 0.8,
+                                          letterSpacing: 0.6,
                                           color: VaultColors.ink,
                                         ),
                                       ),
@@ -119,20 +115,11 @@ class HomePage extends StatelessWidget {
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black.withValues(alpha: 0.7),
-                                blurRadius: 6,
-                              ),
-                            ],
                           ),
                         ),
                         const SizedBox(height: 12),
                         Obx(() {
-                          final totalValue = productController.products.fold<double>(
-                            0,
-                            (sum, p) => sum + p.price,
-                          );
+                          final watchlistVal = cartController.totalPrice;
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -150,25 +137,19 @@ class HomePage extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    totalValue.toStringAsFixed(0),
+                                    watchlistVal.toStringAsFixed(0),
                                     style: VaultTypography.mono(
                                       fontSize: 38,
                                       fontWeight: FontWeight.w800,
                                       letterSpacing: -0.8,
                                       color: Colors.white,
-                                      shadows: [
-                                        Shadow(
-                                          color: Colors.black.withValues(alpha: 0.7),
-                                          blurRadius: 10,
-                                        ),
-                                      ],
                                     ),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                '${productController.products.length} curated timepieces active',
+                                '${cartController.items.length} tracked watchlist valuation',
                                 style: VaultTypography.sans(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
@@ -179,7 +160,7 @@ class HomePage extends StatelessWidget {
                           );
                         }),
                         const SizedBox(height: 28),
-                        // Frosted Glass Bar with Valto Perched on Top
+                        // Frosted Glass Sentinel Bar with Valto Perched on Top
                         Stack(
                           clipBehavior: Clip.none,
                           children: [
@@ -200,13 +181,13 @@ class HomePage extends StatelessWidget {
                                   child: Row(
                                     children: [
                                       Icon(
-                                        Icons.watch_outlined,
+                                        Icons.shield_outlined,
                                         size: 16,
                                         color: Colors.white.withValues(alpha: 0.9),
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        'Valto Curated Watch Market',
+                                        'Valto Sentinel · Asset Valuation',
                                         style: VaultTypography.sans(
                                           fontSize: 12.5,
                                           fontWeight: FontWeight.w600,
@@ -221,7 +202,7 @@ class HomePage extends StatelessWidget {
                             const Positioned(
                               right: 12,
                               top: -26,
-                              child: ValtoMascot(size: 46, mood: ValtoMood.playful),
+                              child: ValtoMascot(size: 46, mood: ValtoMood.vigilant),
                             ),
                           ],
                         ),
@@ -233,7 +214,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
 
-          // Overlapping Rounded Porcelain Sheet
+          // Overlapping Rounded Porcelain Sheet: Local Vault Summary + Market Valuation
           SliverToBoxAdapter(
             child: Transform.translate(
               offset: const Offset(0, -20),
@@ -242,30 +223,98 @@ class HomePage extends StatelessWidget {
                   color: VaultColors.background,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
                 ),
-                padding: const EdgeInsets.fromLTRB(18, 22, 18, 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('LUXURY COLLECTION',
-                        style: VaultTypography.mono(
-                          fontSize: 11,
-                          letterSpacing: 1.2,
-                          fontWeight: FontWeight.w700,
-                          color: VaultColors.ink2,
-                        )),
-                    Text('DUMMYJSON API',
-                        style: VaultTypography.mono(
-                          fontSize: 10,
-                          color: VaultColors.accentWarm,
-                          fontWeight: FontWeight.w600,
-                        )),
+                    // Local Hive Vault Quick Card
+                    ValueListenableBuilder(
+                      valueListenable: Hive.box<VaultItem>('vault_items').listenable(),
+                      builder: (context, box, _) {
+                        return Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: VaultColors.card,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: VaultColors.hairline),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: VaultColors.badgeBg,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(
+                                  Icons.lock_outline_rounded,
+                                  color: VaultColors.accentWarm,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Personal Hive Vault', style: VaultTypography.cardLabel),
+                                    Text(
+                                      '${box.length} aset tersimpan offline',
+                                      style: VaultTypography.cardSub,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const AddVaultItemPage()),
+                                ),
+                                child: Text(
+                                  '+ LOG',
+                                  style: VaultTypography.mono(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: VaultColors.accentWarm,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 18),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'LIVE ASSET BENCHMARK',
+                          style: VaultTypography.mono(
+                            fontSize: 11,
+                            letterSpacing: 1.2,
+                            fontWeight: FontWeight.w700,
+                            color: VaultColors.ink2,
+                          ),
+                        ),
+                        Text(
+                          'LIVE API',
+                          style: VaultTypography.mono(
+                            fontSize: 10,
+                            color: VaultColors.accentWarm,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
             ),
           ),
 
-          // Product Grid
+          // Live Asset Grid
           Obx(() {
             if (productController.isLoading) {
               return const SliverFillRemaining(

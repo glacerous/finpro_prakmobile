@@ -16,12 +16,12 @@ class CartPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: VaultColors.background,
         elevation: 0,
-        title: Text('Keranjang', style: VaultTypography.sectionTitle),
+        title: Text('Vault Watchlist', style: VaultTypography.sectionTitle),
       ),
       body: Obx(() {
         if (cartController.items.isEmpty) {
           return Center(
-            child: Text('Keranjang masih kosong.', style: VaultTypography.cardSub),
+            child: Text('Belum ada aset yang dipantau.', style: VaultTypography.cardSub),
           );
         }
         return Column(
@@ -71,7 +71,7 @@ class CartPage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Total', style: VaultTypography.sectionTitle),
+                  Text('Total Watchlist Valuation', style: VaultTypography.cardLabel),
                   Text(
                     '\$${cartController.totalPrice.toStringAsFixed(2)}',
                     style: VaultTypography.mono(

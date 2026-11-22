@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import '../../controllers/cart_controller.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
 import '../../models/product.dart';
+import '../../models/vault_item.dart';
 
 class DetailPage extends StatelessWidget {
   DetailPage({super.key});
@@ -18,7 +20,7 @@ class DetailPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: VaultColors.background,
         elevation: 0,
-        title: Text('Detail', style: VaultTypography.sectionTitle),
+        title: Text('Asset Valuation', style: VaultTypography.sectionTitle),
       ),
       body: Column(
         children: [
@@ -65,7 +67,7 @@ class DetailPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text('Stock: ${product.stock}', style: VaultTypography.cardSub),
+                  Text('Market Liquidity: ${product.stock} units', style: VaultTypography.cardSub),
                   const SizedBox(height: 12),
                   Text(product.description, style: VaultTypography.cardDescription),
                   if (product.tags.isNotEmpty) ...[
@@ -79,9 +81,9 @@ class DetailPage extends StatelessWidget {
                   ],
                   if (product.reviews.isNotEmpty) ...[
                     const SizedBox(height: 16),
-                    Text('Reviews', style: VaultTypography.sectionTitle),
+                    Text('Appraisal Notes', style: VaultTypography.sectionTitle),
                     ...product.reviews.map((review) {
-                      final name = review['reviewerName']?.toString() ?? 'User';
+                      final name = review['reviewerName']?.toString() ?? 'Appraiser';
                       return ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: CircleAvatar(
@@ -98,30 +100,66 @@ class DetailPage extends StatelessWidget {
               ),
             ),
           ),
-          // Bottom Thumb Zone CTA
+          // Bottom Thumb Zone Actions
           Padding(
             padding: const EdgeInsets.all(16),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  cartController.addToCart(product);
-                  Get.snackbar(
-                    'Keranjang',
-                    '${product.title} ditambahkan',
-                    snackPosition: SnackPosition.BOTTOM,
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: VaultColors.primaryButton,
-                  foregroundColor: VaultColors.primaryButtonInk,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Hive.box<VaultItem>('vault_items').add(
+                        VaultItem(
+                          title: product.title,
+                          subtitle: 'Est. \$${product.price}',
+                        ),
+                      );
+                      VaultToast.show(
+                        context,
+                        icon: Icons.lock_outline_rounded,
+                        message: '${product.title} disimpan ke Hive Vault',
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: VaultColors.hairline),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'Save to Vault',
+                      style: VaultTypography.sans(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: VaultColors.ink,
+                      ),
+                    ),
                   ),
                 ),
-                child: const Text('Tambahkan ke Keranjang'),
-              ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      cartController.addToCart(product);
+                      VaultToast.show(
+                        context,
+                        icon: Icons.bookmark_added_outlined,
+                        message: '${product.title} masuk Watchlist',
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: VaultColors.primaryButton,
+                      foregroundColor: VaultColors.primaryButtonInk,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Pin Watchlist'),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
