@@ -430,7 +430,7 @@ class HomePage extends StatelessWidget {
                               icon: Icons.lock_outline_rounded,
                               iconColor: VaultColors.accent,
                               title: 'My Warranty Vault',
-                              subtitle: 'Perangkat & masa berlaku garansi (Hive)',
+                              subtitle: 'Perangkat & masa berlaku garansi',
                               value: '${box.length} Items',
                               onTap: () => Navigator.push(
                                 context,
@@ -450,7 +450,7 @@ class HomePage extends StatelessWidget {
                               icon: Icons.laptop_mac_rounded,
                               iconColor: VaultColors.ink,
                               title: 'Hardware & Devices',
-                              subtitle: 'Referensi spek & valuasi laptop (API)',
+                              subtitle: 'Referensi spek & estimasi harga',
                               value: '${productController.products.length} Live',
                               onTap: () => Get.toNamed(AppRoutes.catalog),
                             ),
@@ -465,8 +465,8 @@ class HomePage extends StatelessWidget {
                           _buildPillarRow(
                             icon: Icons.near_me_rounded,
                             iconColor: VaultColors.ink2,
-                            title: 'LBS Care Centers',
-                            subtitle: 'Service center resmi Jogja & reminder klaim',
+                            title: 'Service Center Resmi',
+                            subtitle: 'Service center terdekat & pengingat klaim',
                             value: 'Radar',
                             onTap: () => Navigator.push(
                               context,
@@ -485,7 +485,7 @@ class HomePage extends StatelessWidget {
                               icon: Icons.verified_user_outlined,
                               iconColor: VaultColors.pos,
                               title: 'Priority Audit List',
-                              subtitle: 'Daftar prioritas klaim garansi (GetX)',
+                              subtitle: 'Daftar prioritas klaim garansi',
                               value: '${cartController.items.length} Audit',
                               onTap: () => Get.toNamed(AppRoutes.cart),
                             ),

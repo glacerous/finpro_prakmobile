@@ -155,7 +155,7 @@ class _LbsPageState extends State<LbsPage> {
           ? AppBar(
               backgroundColor: VaultColors.background,
               elevation: 0,
-              title: Text('LBS Care Centers', style: VaultTypography.sectionTitle),
+              title: Text('Service Center Resmi', style: VaultTypography.sectionTitle),
             )
           : null,
       body: SafeArea(

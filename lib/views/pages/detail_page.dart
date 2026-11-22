@@ -118,7 +118,7 @@ class DetailPage extends StatelessWidget {
                       VaultToast.show(
                         context,
                         icon: Icons.verified_user_outlined,
-                        message: '${product.title} didaftarkan ke Garansi Hive',
+                        message: '${product.title} didaftarkan ke Garansi',
                       );
                     },
                     style: OutlinedButton.styleFrom(

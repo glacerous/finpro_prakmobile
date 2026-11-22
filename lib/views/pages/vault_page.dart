@@ -46,7 +46,7 @@ class VaultPage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'WARRANTY VAULT (HIVE)',
+                                'WARRANTY VAULT',
                                 style: VaultTypography.mono(
                                   fontSize: 10,
                                   letterSpacing: 1.5,

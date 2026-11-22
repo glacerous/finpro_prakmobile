@@ -176,7 +176,7 @@ class ProfilePage extends StatelessWidget {
                   color: VaultColors.posBg,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Text('SESSION ACTIVE', style: VaultTypography.badgeLabel),
+                child: Text('VERIFIED MEMBER', style: VaultTypography.badgeLabel),
               ),
               const SizedBox(height: 28),
 
@@ -209,9 +209,9 @@ class ProfilePage extends StatelessWidget {
                     ),
                     const Divider(height: 1, color: VaultColors.hairline),
                     _infoRow(
-                      icon: Icons.verified_outlined,
-                      label: 'Session Storage',
-                      value: 'SharedPreferences',
+                      icon: Icons.location_on_outlined,
+                      label: 'Wilayah Layanan',
+                      value: 'Yogyakarta, ID',
                     ),
                     const Divider(height: 1, color: VaultColors.hairline),
                     ValueListenableBuilder(
