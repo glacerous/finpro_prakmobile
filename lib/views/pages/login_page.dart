@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
 import '../../models/user.dart';
@@ -17,15 +18,36 @@ class _LoginPageState extends State<LoginPage> {
   bool isLoginFailed = false;
   bool isLoggedIn = false;
 
-  void _login() {
-    final username = _usernameController.text.trim();
-    final password = _passwordController.text.trim();
+  @override
+  void initState() {
+    super.initState();
+    _checkLogin();
+  }
 
-    if (username == user1.username && password == user1.password) {
+  Future<void> _checkLogin() async {
+    final loginData = await SharedPreferences.getInstance();
+    final adaLogin = loginData.getBool('loginData') ?? false;
+    if (adaLogin && mounted) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => RootPage(nama: user1.nama)),
       );
+    }
+  }
+
+  Future<void> _login() async {
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (username == user1.username && password == user1.password) {
+      final loginData = await SharedPreferences.getInstance();
+      await loginData.setBool('loginData', true);
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => RootPage(nama: user1.nama)),
+        );
+      }
     } else {
       setState(() {
         isLoggedIn = false;
