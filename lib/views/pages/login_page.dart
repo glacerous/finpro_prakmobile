@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
 import '../../models/user.dart';
+import 'root_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,10 +22,10 @@ class _LoginPageState extends State<LoginPage> {
     final password = _passwordController.text.trim();
 
     if (username == user1.username && password == user1.password) {
-      setState(() {
-        isLoggedIn = true;
-        isLoginFailed = false;
-      });
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => RootPage(nama: user1.nama)),
+      );
     } else {
       setState(() {
         isLoggedIn = false;
