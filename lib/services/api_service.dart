@@ -6,7 +6,7 @@ class ApiService {
   static const String apiUrl = 'https://dummyjson.com/products';
 
   static Future<List<Product>> getProducts() async {
-    final response = await http.get(Uri.parse(apiUrl));
+    final response = await http.get(Uri.parse('$apiUrl/category/mens-watches'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final List rawList = data['products'];
