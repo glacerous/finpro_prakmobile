@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
+import '../../core/widgets/valto_mascot.dart';
 import '../../models/location_data.dart';
 import '../../services/notification_service.dart';
 
@@ -67,6 +69,7 @@ class _LbsPageState extends State<LbsPage> {
   }
 
   Future<void> _getCurrentLocation() async {
+    HapticFeedback.lightImpact();
     setState(() {
       _isLoadingLocation = true;
       _locationsWithDistance = [];
@@ -75,8 +78,11 @@ class _LbsPageState extends State<LbsPage> {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('GPS tidak aktif.')),
+        VaultToast.show(
+          context,
+          icon: Icons.location_off_outlined,
+          iconColor: VaultColors.neg,
+          message: 'GPS tidak aktif.',
         );
       }
       setState(() => _isLoadingLocation = false);
@@ -88,8 +94,11 @@ class _LbsPageState extends State<LbsPage> {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Permission lokasi ditolak.')),
+          VaultToast.show(
+            context,
+            icon: Icons.location_off_outlined,
+            iconColor: VaultColors.neg,
+            message: 'Permission lokasi ditolak.',
           );
         }
         setState(() => _isLoadingLocation = false);
@@ -99,8 +108,11 @@ class _LbsPageState extends State<LbsPage> {
 
     if (permission == LocationPermission.deniedForever) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Permission lokasi diblokir.')),
+        VaultToast.show(
+          context,
+          icon: Icons.location_off_outlined,
+          iconColor: VaultColors.neg,
+          message: 'Permission lokasi diblokir.',
         );
       }
       setState(() => _isLoadingLocation = false);
@@ -137,192 +149,280 @@ class _LbsPageState extends State<LbsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: VaultColors.background,
-      appBar: AppBar(
-        backgroundColor: VaultColors.background,
-        elevation: 0,
-        title: Text('Safehouse & Reminder', style: VaultTypography.sectionTitle),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text('Notifikasi Langsung', style: VaultTypography.cardLabel),
-            const SizedBox(height: 8),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.notifications_active_outlined),
-              label: const Text('Kirim Notifikasi Sekarang'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: VaultColors.primaryButton,
-                foregroundColor: VaultColors.primaryButtonInk,
-                padding: const EdgeInsets.all(14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onPressed: () async {
-                await NotificationService().showInstantNotification(
-                  title: 'VAULTED Alert',
-                  body: 'Status brankas aman & terpantau.',
-                );
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Notifikasi dikirim!')),
-                  );
-                }
-              },
-            ),
-            const SizedBox(height: 24),
-            Text('Lokasi Terdekat (LBS)', style: VaultTypography.cardLabel),
-            const SizedBox(height: 8),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.my_location),
-              label: const Text('Cek Lokasi Saya'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: VaultColors.accent,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.all(14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onPressed: _isLoadingLocation ? null : _getCurrentLocation,
-            ),
-            if (_isLoadingLocation) ...[
-              const SizedBox(height: 16),
-              const Center(child: CircularProgressIndicator(color: VaultColors.accent)),
-            ],
-            if (_currentPosition != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                'Posisi: ${_currentPosition!.latitude.toStringAsFixed(5)}, '
-                '${_currentPosition!.longitude.toStringAsFixed(5)}',
-                style: VaultTypography.mono(fontSize: 11, color: VaultColors.ink2),
-              ),
-              const SizedBox(height: 10),
-              ..._locationsWithDistance.map((item) {
-                final loc = item['location'] as LocationData;
-                final distance = item['distance'] as double;
-                final isNear = distance < 150;
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: isNear ? VaultColors.posBg : VaultColors.card,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: isNear ? VaultColors.pos : VaultColors.hairline,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.location_on,
-                        size: 18,
-                        color: isNear ? VaultColors.pos : VaultColors.ink2,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text(loc.name, style: VaultTypography.cardLabel)),
-                      Text(
-                        _formatDistance(distance),
-                        style: VaultTypography.mono(
-                          fontSize: 12,
-                          color: isNear ? VaultColors.pos : VaultColors.ink2,
-                          fontWeight: isNear ? FontWeight.w600 : FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            ],
-            const SizedBox(height: 24),
-            Text('Set Reminder ke Lokasi', style: VaultTypography.cardLabel),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<LocationData?>(
-              initialValue: _selectedLocation,
-              decoration: const InputDecoration(
-                labelText: 'Pilih lokasi tujuan',
-                border: OutlineInputBorder(),
-              ),
-              items: [
-                const DropdownMenuItem(value: null, child: Text('Pilih lokasi...')),
-                ...dummyLocations.map(
-                  (loc) => DropdownMenuItem(value: loc, child: Text(loc.name)),
-                ),
-              ],
-              onChanged: (val) => setState(() => _selectedLocation = val),
-            ),
-            const SizedBox(height: 12),
-            GestureDetector(
-              onTap: _pickDateTime,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Top 25% Glance Header
+              Container(
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: VaultColors.card,
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: VaultColors.hairline),
-                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.calendar_today, size: 18, color: VaultColors.ink2),
-                    const SizedBox(width: 8),
+                    const ValtoMascot(size: 52, mood: ValtoMood.detective),
+                    const SizedBox(width: 14),
                     Expanded(
-                      child: Text(
-                        _scheduledTime == null
-                            ? 'Pilih tanggal & waktu reminder...'
-                            : _formatDateTime(_scheduledTime!),
-                        style: VaultTypography.sans(
-                          color: _scheduledTime == null ? VaultColors.ink3 : VaultColors.ink,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'SAFEHOUSE RADAR & ALERT',
+                            style: VaultTypography.mono(
+                              fontSize: 10,
+                              letterSpacing: 1.4,
+                              color: VaultColors.accentWarm,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _currentPosition == null
+                                ? 'GPS Standby'
+                                : '${_currentPosition!.latitude.toStringAsFixed(4)}, '
+                                    '${_currentPosition!.longitude.toStringAsFixed(4)}',
+                            style: VaultTypography.mono(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    if (_scheduledTime != null)
-                      GestureDetector(
-                        onTap: () => setState(() => _scheduledTime = null),
-                        child: const Icon(Icons.close, size: 18, color: VaultColors.ink2),
-                      ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.alarm),
-              label: const Text('Set Reminder'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: VaultColors.primaryButton,
-                foregroundColor: VaultColors.primaryButtonInk,
-                padding: const EdgeInsets.all(14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+              const SizedBox(height: 16),
+
+              // Section 1: Immediate Notification
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: VaultColors.card,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: VaultColors.hairline),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text('Notifikasi Langsung', style: VaultTypography.cardLabel),
+                    const SizedBox(height: 10),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.notifications_active_outlined),
+                      label: const Text('Kirim Notifikasi Sekarang'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: VaultColors.primaryButton,
+                        foregroundColor: VaultColors.primaryButtonInk,
+                        padding: const EdgeInsets.all(14),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () async {
+                        await NotificationService().showInstantNotification(
+                          title: 'VAULTED Alert',
+                          body: 'Status brankas aman & terpantau.',
+                        );
+                        if (context.mounted) {
+                          VaultToast.show(
+                            context,
+                            icon: Icons.notifications_active_outlined,
+                            message: 'Notifikasi dikirim!',
+                          );
+                        }
+                      },
+                    ),
+                  ],
                 ),
               ),
-              onPressed: _selectedLocation == null || _scheduledTime == null
-                  ? null
-                  : () async {
-                      await NotificationService().scheduleNotification(
-                        id: 1,
-                        title: 'Reminder: ${_selectedLocation!.name}',
-                        body: 'Cek jarak kamu dari ${_selectedLocation!.name}',
-                        scheduledTime: _scheduledTime!,
-                      );
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Reminder ke ${_selectedLocation!.name} '
-                            'di-set untuk ${_formatDateTime(_scheduledTime!)}',
-                          ),
+              const SizedBox(height: 16),
+
+              // Section 2: LBS Nearest Safehouses
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: VaultColors.card,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: VaultColors.hairline),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text('Lokasi Safehouse Terdekat', style: VaultTypography.cardLabel),
+                    const SizedBox(height: 10),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.my_location),
+                      label: const Text('Cek Lokasi Saya'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: VaultColors.accent,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.all(14),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      );
-                      setState(() {
-                        _scheduledTime = null;
-                        _selectedLocation = null;
-                      });
-                    },
-            ),
-          ],
+                      ),
+                      onPressed: _isLoadingLocation ? null : _getCurrentLocation,
+                    ),
+                    if (_isLoadingLocation) ...[
+                      const SizedBox(height: 16),
+                      const Center(
+                        child: CircularProgressIndicator(color: VaultColors.accent),
+                      ),
+                    ],
+                    if (_locationsWithDistance.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      ..._locationsWithDistance.map((item) {
+                        final loc = item['location'] as LocationData;
+                        final distance = item['distance'] as double;
+                        final isNear = distance < 150;
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: isNear ? VaultColors.posBg : VaultColors.background,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isNear ? VaultColors.pos : VaultColors.hairline,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.location_on,
+                                size: 18,
+                                color: isNear ? VaultColors.pos : VaultColors.ink2,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(loc.name, style: VaultTypography.cardLabel),
+                              ),
+                              Text(
+                                _formatDistance(distance),
+                                style: VaultTypography.mono(
+                                  fontSize: 12,
+                                  color: isNear ? VaultColors.pos : VaultColors.ink2,
+                                  fontWeight: isNear ? FontWeight.w700 : FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Section 3: Scheduled Notification
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: VaultColors.card,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: VaultColors.hairline),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text('Set Reminder ke Lokasi', style: VaultTypography.cardLabel),
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<LocationData?>(
+                      initialValue: _selectedLocation,
+                      decoration: const InputDecoration(
+                        labelText: 'Pilih lokasi tujuan',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: [
+                        const DropdownMenuItem(value: null, child: Text('Pilih lokasi...')),
+                        ...dummyLocations.map(
+                          (loc) => DropdownMenuItem(value: loc, child: Text(loc.name)),
+                        ),
+                      ],
+                      onChanged: (val) => setState(() => _selectedLocation = val),
+                    ),
+                    const SizedBox(height: 12),
+                    GestureDetector(
+                      onTap: _pickDateTime,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                        decoration: BoxDecoration(
+                          color: VaultColors.background,
+                          border: Border.all(color: VaultColors.hairline),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.calendar_today, size: 18, color: VaultColors.ink2),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _scheduledTime == null
+                                    ? 'Pilih tanggal & waktu reminder...'
+                                    : _formatDateTime(_scheduledTime!),
+                                style: VaultTypography.sans(
+                                  color: _scheduledTime == null
+                                      ? VaultColors.ink3
+                                      : VaultColors.ink,
+                                ),
+                              ),
+                            ),
+                            if (_scheduledTime != null)
+                              GestureDetector(
+                                onTap: () => setState(() => _scheduledTime = null),
+                                child: const Icon(Icons.close, size: 18, color: VaultColors.ink2),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.alarm),
+                      label: const Text('Set Reminder'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: VaultColors.primaryButton,
+                        foregroundColor: VaultColors.primaryButtonInk,
+                        padding: const EdgeInsets.all(14),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: _selectedLocation == null || _scheduledTime == null
+                          ? null
+                          : () async {
+                              await NotificationService().scheduleNotification(
+                                id: 1,
+                                title: 'Reminder: ${_selectedLocation!.name}',
+                                body: 'Cek jarak kamu dari ${_selectedLocation!.name}',
+                                scheduledTime: _scheduledTime!,
+                              );
+                              if (!context.mounted) return;
+                              VaultToast.show(
+                                context,
+                                icon: Icons.alarm_on_outlined,
+                                message:
+                                    'Reminder ${_selectedLocation!.name}: ${_formatDateTime(_scheduledTime!)}',
+                              );
+                              setState(() {
+                                _scheduledTime = null;
+                                _selectedLocation = null;
+                              });
+                            },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

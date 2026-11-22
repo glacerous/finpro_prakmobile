@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../core/constants/colors.dart';
 import '../../models/user.dart';
@@ -30,23 +31,28 @@ class _RootPageState extends State<RootPage> {
 
     return Scaffold(
       body: pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        selectedItemColor: VaultColors.ink,
-        unselectedItemColor: VaultColors.ink3,
-        backgroundColor: VaultColors.card,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(Icons.lock_outline), label: 'Brankas'),
-          BottomNavigationBarItem(icon: Icon(Icons.location_on_outlined), label: 'Lokasi'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profil'),
-        ],
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: VaultColors.hairline)),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          selectedItemColor: VaultColors.ink,
+          unselectedItemColor: VaultColors.ink3,
+          backgroundColor: VaultColors.card,
+          elevation: 0,
+          type: BottomNavigationBarType.fixed,
+          onTap: (index) {
+            HapticFeedback.selectionClick();
+            setState(() => _selectedIndex = index);
+          },
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.storefront_outlined), label: 'Market'),
+            BottomNavigationBarItem(icon: Icon(Icons.lock_outline), label: 'Brankas'),
+            BottomNavigationBarItem(icon: Icon(Icons.radar_outlined), label: 'Radar'),
+            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profil'),
+          ],
+        ),
       ),
     );
   }

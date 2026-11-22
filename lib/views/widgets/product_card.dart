@@ -17,34 +17,75 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Card(
-        color: VaultColors.card,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: VaultColors.hairline),
+      child: Container(
+        decoration: BoxDecoration(
+          color: VaultColors.card,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: VaultColors.hairline),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Image.network(
-                  product.images.isNotEmpty ? product.images[0] : '',
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, _, _) => const Icon(Icons.image),
-                ),
+              flex: 5,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                      child: Container(
+                        color: VaultColors.background,
+                        padding: const EdgeInsets.all(10),
+                        child: Image.network(
+                          product.images.isNotEmpty ? product.images[0] : '',
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, _, _) =>
+                              const Icon(Icons.image_outlined, color: VaultColors.ink3),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: VaultColors.card,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: VaultColors.hairline),
+                      ),
+                      child: Text(
+                        '★ ${product.rating.toStringAsFixed(1)}',
+                        style: VaultTypography.mono(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: VaultColors.accentWarm,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Expanded(
+              flex: 3,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    Text(
+                      product.category.toUpperCase(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: VaultTypography.mono(
+                        fontSize: 9,
+                        letterSpacing: 0.8,
+                        color: VaultColors.ink3,
+                      ),
+                    ),
                     Text(
                       product.title,
                       maxLines: 1,
@@ -54,9 +95,9 @@ class ProductCard extends StatelessWidget {
                     Text(
                       '\$${product.price}',
                       style: VaultTypography.mono(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: VaultColors.accent,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: VaultColors.ink,
                       ),
                     ),
                   ],
