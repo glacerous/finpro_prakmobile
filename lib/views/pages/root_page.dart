@@ -97,20 +97,20 @@ class _RootPageState extends State<RootPage> {
                 _buildTabItem(
                   index: 0,
                   label: 'Vault',
-                  icon: Icons.account_balance_wallet_outlined,
-                  activeIcon: Icons.account_balance_wallet_rounded,
+                  icon: Icons.shield_outlined,
+                  activeIcon: Icons.shield_rounded,
                 ),
                 _buildTabItem(
                   index: 1,
-                  label: 'Assets',
-                  icon: Icons.lock_outline_rounded,
-                  activeIcon: Icons.lock_rounded,
+                  label: 'Garansi',
+                  icon: Icons.receipt_long_outlined,
+                  activeIcon: Icons.receipt_long_rounded,
                 ),
                 _buildTabItem(
                   index: 2,
-                  label: 'Radar',
-                  icon: Icons.radar_outlined,
-                  activeIcon: Icons.radar_rounded,
+                  label: 'Service',
+                  icon: Icons.build_circle_outlined,
+                  activeIcon: Icons.build_circle_rounded,
                 ),
                 _buildTabItem(
                   index: 3,

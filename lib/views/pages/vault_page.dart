@@ -21,7 +21,7 @@ class VaultPage extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Top 25% Glance Only: Dark Luxury Portfolio Summary Card
+                // Top 25% Glance Only: Warranty Portfolio Summary
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                   child: Container(
@@ -37,7 +37,7 @@ class VaultPage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'LOCAL HIVE VAULT',
+                                'WARRANTY VAULT (HIVE)',
                                 style: VaultTypography.mono(
                                   fontSize: 10,
                                   letterSpacing: 1.5,
@@ -47,7 +47,7 @@ class VaultPage extends StatelessWidget {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                '${box.length} Aset Tersimpan',
+                                '${box.length} Garansi Aktif',
                                 style: VaultTypography.mono(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w700,
@@ -56,7 +56,7 @@ class VaultPage extends StatelessWidget {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'Offline-first encrypted box',
+                                'Simpan perangkat & masa berlaku garansi',
                                 style: VaultTypography.sans(
                                   fontSize: 11,
                                   color: VaultColors.ink3,
@@ -70,7 +70,6 @@ class VaultPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Asset List
                 Expanded(
                   child: box.isEmpty
                       ? Center(
@@ -80,12 +79,12 @@ class VaultPage extends StatelessWidget {
                               const ValtoMascot(size: 72, mood: ValtoMood.sleeping),
                               const SizedBox(height: 12),
                               Text(
-                                'Brankas masih kosong.',
+                                'Belum ada perangkat bergaransi.',
                                 style: VaultTypography.cardLabel,
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Tekan tombol di bawah untuk simpan aset.',
+                                'Tekan tombol di bawah untuk daftarkan garansi.',
                                 style: VaultTypography.cardSub,
                               ),
                             ],
@@ -109,12 +108,12 @@ class VaultPage extends StatelessWidget {
                                   width: 40,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: VaultColors.badgeBg,
+                                    color: VaultColors.posBg,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: const Icon(
                                     Icons.verified_user_outlined,
-                                    color: VaultColors.accentWarm,
+                                    color: VaultColors.pos,
                                     size: 20,
                                   ),
                                 ),
@@ -168,7 +167,7 @@ class VaultPage extends StatelessWidget {
                       );
                     },
                     icon: const Icon(Icons.add),
-                    label: const Text('Simpan Aset ke Brankas'),
+                    label: const Text('Daftarkan Garansi Baru'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: VaultColors.primaryButton,
                       foregroundColor: VaultColors.primaryButtonInk,

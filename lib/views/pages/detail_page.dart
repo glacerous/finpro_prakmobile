@@ -20,7 +20,7 @@ class DetailPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: VaultColors.background,
         elevation: 0,
-        title: Text('Asset Valuation', style: VaultTypography.sectionTitle),
+        title: Text('Detail Perangkat', style: VaultTypography.sectionTitle),
       ),
       body: Column(
         children: [
@@ -56,7 +56,7 @@ class DetailPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '\$${product.price}',
+                        'Est. \$${product.price}',
                         style: VaultTypography.mono(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -67,7 +67,8 @@ class DetailPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text('Market Liquidity: ${product.stock} units', style: VaultTypography.cardSub),
+                  Text('Brand: ${product.brand.isEmpty ? product.category : product.brand}',
+                      style: VaultTypography.cardSub),
                   const SizedBox(height: 12),
                   Text(product.description, style: VaultTypography.cardDescription),
                   if (product.tags.isNotEmpty) ...[
@@ -81,9 +82,9 @@ class DetailPage extends StatelessWidget {
                   ],
                   if (product.reviews.isNotEmpty) ...[
                     const SizedBox(height: 16),
-                    Text('Appraisal Notes', style: VaultTypography.sectionTitle),
+                    Text('Catatan Pengguna', style: VaultTypography.sectionTitle),
                     ...product.reviews.map((review) {
-                      final name = review['reviewerName']?.toString() ?? 'Appraiser';
+                      final name = review['reviewerName']?.toString() ?? 'User';
                       return ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: CircleAvatar(
@@ -111,13 +112,13 @@ class DetailPage extends StatelessWidget {
                       Hive.box<VaultItem>('vault_items').add(
                         VaultItem(
                           title: product.title,
-                          subtitle: 'Est. \$${product.price}',
+                          subtitle: 'Garansi 1 Thn · \$${product.price}',
                         ),
                       );
                       VaultToast.show(
                         context,
-                        icon: Icons.lock_outline_rounded,
-                        message: '${product.title} disimpan ke Hive Vault',
+                        icon: Icons.verified_user_outlined,
+                        message: '${product.title} didaftarkan ke Garansi Hive',
                       );
                     },
                     style: OutlinedButton.styleFrom(
@@ -128,7 +129,7 @@ class DetailPage extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'Save to Vault',
+                      'Daftarkan Garansi',
                       style: VaultTypography.sans(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -144,8 +145,8 @@ class DetailPage extends StatelessWidget {
                       cartController.addToCart(product);
                       VaultToast.show(
                         context,
-                        icon: Icons.bookmark_added_outlined,
-                        message: '${product.title} masuk Watchlist',
+                        icon: Icons.shield_outlined,
+                        message: '${product.title} masuk Prioritas Audit',
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -156,7 +157,7 @@ class DetailPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text('Pin Watchlist'),
+                    child: const Text('Prioritas Audit'),
                   ),
                 ),
               ],

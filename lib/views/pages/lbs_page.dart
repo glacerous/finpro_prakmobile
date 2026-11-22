@@ -172,7 +172,7 @@ class _LbsPageState extends State<LbsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'SAFEHOUSE RADAR & ALERT',
+                            'OFFICIAL SERVICE CENTERS',
                             style: VaultTypography.mono(
                               fontSize: 10,
                               letterSpacing: 1.4,
@@ -183,11 +183,11 @@ class _LbsPageState extends State<LbsPage> {
                           const SizedBox(height: 4),
                           Text(
                             _currentPosition == null
-                                ? 'GPS Standby'
+                                ? 'Yogyakarta Directory · GPS Standby'
                                 : '${_currentPosition!.latitude.toStringAsFixed(4)}, '
                                     '${_currentPosition!.longitude.toStringAsFixed(4)}',
                             style: VaultTypography.mono(
-                              fontSize: 13,
+                              fontSize: 12.5,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -199,7 +199,7 @@ class _LbsPageState extends State<LbsPage> {
               ),
               const SizedBox(height: 16),
 
-              // Section 1: Immediate Notification
+              // Section 1: Immediate Warranty Alert
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -210,11 +210,11 @@ class _LbsPageState extends State<LbsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Notifikasi Langsung', style: VaultTypography.cardLabel),
+                    Text('Notifikasi Status Garansi', style: VaultTypography.cardLabel),
                     const SizedBox(height: 10),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.notifications_active_outlined),
-                      label: const Text('Kirim Notifikasi Sekarang'),
+                      label: const Text('Tes Notifikasi Garansi'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: VaultColors.primaryButton,
                         foregroundColor: VaultColors.primaryButtonInk,
@@ -226,14 +226,14 @@ class _LbsPageState extends State<LbsPage> {
                       ),
                       onPressed: () async {
                         await NotificationService().showInstantNotification(
-                          title: 'VAULTED Alert',
-                          body: 'Status brankas aman & terpantau.',
+                          title: 'VAULTED Warranty Sentinel',
+                          body: 'Pantauan masa berlaku garansi perangkat aktif.',
                         );
                         if (context.mounted) {
                           VaultToast.show(
                             context,
                             icon: Icons.notifications_active_outlined,
-                            message: 'Notifikasi dikirim!',
+                            message: 'Notifikasi garansi dikirim!',
                           );
                         }
                       },
@@ -243,7 +243,7 @@ class _LbsPageState extends State<LbsPage> {
               ),
               const SizedBox(height: 16),
 
-              // Section 2: LBS Nearest Safehouses
+              // Section 2: LBS Nearest Service Centers
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -254,7 +254,7 @@ class _LbsPageState extends State<LbsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Lokasi Safehouse Terdekat', style: VaultTypography.cardLabel),
+                    Text('Cari Service Center Terdekat', style: VaultTypography.cardLabel),
                     const SizedBox(height: 10),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.my_location),
@@ -281,7 +281,7 @@ class _LbsPageState extends State<LbsPage> {
                       ..._locationsWithDistance.map((item) {
                         final loc = item['location'] as LocationData;
                         final distance = item['distance'] as double;
-                        final isNear = distance < 150;
+                        final isNear = distance < 2000;
                         return Container(
                           margin: const EdgeInsets.only(bottom: 8),
                           padding: const EdgeInsets.all(12),
@@ -295,14 +295,21 @@ class _LbsPageState extends State<LbsPage> {
                           child: Row(
                             children: [
                               Icon(
-                                Icons.location_on,
-                                size: 18,
+                                Icons.build_circle_outlined,
+                                size: 20,
                                 color: isNear ? VaultColors.pos : VaultColors.ink2,
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 10),
                               Expanded(
-                                child: Text(loc.name, style: VaultTypography.cardLabel),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(loc.name, style: VaultTypography.cardLabel),
+                                    Text(loc.address, style: VaultTypography.cardSub),
+                                  ],
+                                ),
                               ),
+                              const SizedBox(width: 8),
                               Text(
                                 _formatDistance(distance),
                                 style: VaultTypography.mono(
@@ -321,7 +328,7 @@ class _LbsPageState extends State<LbsPage> {
               ),
               const SizedBox(height: 16),
 
-              // Section 3: Scheduled Notification
+              // Section 3: Scheduled Warranty Claim Reminder
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -332,16 +339,17 @@ class _LbsPageState extends State<LbsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Set Reminder ke Lokasi', style: VaultTypography.cardLabel),
+                    Text('Jadwalkan Pengingat Klaim Garansi', style: VaultTypography.cardLabel),
                     const SizedBox(height: 10),
                     DropdownButtonFormField<LocationData?>(
                       initialValue: _selectedLocation,
+                      isExpanded: true,
                       decoration: const InputDecoration(
-                        labelText: 'Pilih lokasi tujuan',
+                        labelText: 'Pilih Service Center tujuan',
                         border: OutlineInputBorder(),
                       ),
                       items: [
-                        const DropdownMenuItem(value: null, child: Text('Pilih lokasi...')),
+                        const DropdownMenuItem(value: null, child: Text('Pilih Service Center...')),
                         ...dummyLocations.map(
                           (loc) => DropdownMenuItem(value: loc, child: Text(loc.name)),
                         ),
@@ -365,7 +373,7 @@ class _LbsPageState extends State<LbsPage> {
                             Expanded(
                               child: Text(
                                 _scheduledTime == null
-                                    ? 'Pilih tanggal & waktu reminder...'
+                                    ? 'Pilih tanggal & waktu klaim garansi...'
                                     : _formatDateTime(_scheduledTime!),
                                 style: VaultTypography.sans(
                                   color: _scheduledTime == null
@@ -386,7 +394,7 @@ class _LbsPageState extends State<LbsPage> {
                     const SizedBox(height: 12),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.alarm),
-                      label: const Text('Set Reminder'),
+                      label: const Text('Set Pengingat Klaim'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: VaultColors.primaryButton,
                         foregroundColor: VaultColors.primaryButtonInk,
@@ -401,8 +409,8 @@ class _LbsPageState extends State<LbsPage> {
                           : () async {
                               await NotificationService().scheduleNotification(
                                 id: 1,
-                                title: 'Reminder: ${_selectedLocation!.name}',
-                                body: 'Cek jarak kamu dari ${_selectedLocation!.name}',
+                                title: 'Klaim Garansi: ${_selectedLocation!.name}',
+                                body: 'Waktunya cek & klaim garansi ke ${_selectedLocation!.name}',
                                 scheduledTime: _scheduledTime!,
                               );
                               if (!context.mounted) return;
@@ -410,7 +418,7 @@ class _LbsPageState extends State<LbsPage> {
                                 context,
                                 icon: Icons.alarm_on_outlined,
                                 message:
-                                    'Reminder ${_selectedLocation!.name}: ${_formatDateTime(_scheduledTime!)}',
+                                    'Pengingat ${_selectedLocation!.name}: ${_formatDateTime(_scheduledTime!)}',
                               );
                               setState(() {
                                 _scheduledTime = null;

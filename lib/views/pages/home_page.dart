@@ -87,13 +87,13 @@ class HomePage extends StatelessWidget {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       const Icon(
-                                        Icons.bookmark_outline_rounded,
+                                        Icons.verified_user_outlined,
                                         size: 15,
                                         color: VaultColors.ink,
                                       ),
                                       const SizedBox(width: 5),
                                       Text(
-                                        'WATCHLIST (${cartController.items.length})',
+                                        'AUDIT (${cartController.items.length})',
                                         style: VaultTypography.mono(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w700,
@@ -118,47 +118,34 @@ class HomePage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        Obx(() {
-                          final watchlistVal = cartController.totalPrice;
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.baseline,
-                                textBaseline: TextBaseline.alphabetic,
-                                children: [
-                                  Text(
-                                    '\$',
-                                    style: VaultTypography.mono(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white.withValues(alpha: 0.85),
-                                    ),
+                        ValueListenableBuilder(
+                          valueListenable: Hive.box<VaultItem>('vault_items').listenable(),
+                          builder: (context, box, _) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${box.length} Perangkat',
+                                  style: VaultTypography.mono(
+                                    fontSize: 34,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.8,
+                                    color: Colors.white,
                                   ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    watchlistVal.toStringAsFixed(0),
-                                    style: VaultTypography.mono(
-                                      fontSize: 38,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: -0.8,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                '${cartController.items.length} tracked watchlist valuation',
-                                style: VaultTypography.sans(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white.withValues(alpha: 0.88),
                                 ),
-                              ),
-                            ],
-                          );
-                        }),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Garansi aktif tersimpan di brankas lokal',
+                                  style: VaultTypography.sans(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white.withValues(alpha: 0.88),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                         const SizedBox(height: 28),
                         // Frosted Glass Sentinel Bar with Valto Perched on Top
                         Stack(
@@ -187,7 +174,7 @@ class HomePage extends StatelessWidget {
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        'Valto Sentinel · Asset Valuation',
+                                        'Valto Warranty Sentinel · Active',
                                         style: VaultTypography.sans(
                                           fontSize: 12.5,
                                           fontWeight: FontWeight.w600,
@@ -214,7 +201,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
 
-          // Overlapping Rounded Porcelain Sheet: Local Vault Summary + Market Valuation
+          // Overlapping Rounded Porcelain Sheet
           SliverToBoxAdapter(
             child: Transform.translate(
               offset: const Offset(0, -20),
@@ -227,7 +214,7 @@ class HomePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Local Hive Vault Quick Card
+                    // My Warranty Vault Quick Card
                     ValueListenableBuilder(
                       valueListenable: Hive.box<VaultItem>('vault_items').listenable(),
                       builder: (context, box, _) {
@@ -248,7 +235,7 @@ class HomePage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: const Icon(
-                                  Icons.lock_outline_rounded,
+                                  Icons.receipt_long_outlined,
                                   color: VaultColors.accentWarm,
                                   size: 20,
                                 ),
@@ -258,9 +245,13 @@ class HomePage extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Personal Hive Vault', style: VaultTypography.cardLabel),
+                                    Text('Brankas Garansi Saya', style: VaultTypography.cardLabel),
                                     Text(
-                                      '${box.length} aset tersimpan offline',
+                                      box.isEmpty
+                                          ? 'Belum ada perangkat terdaftar'
+                                          : '${box.getAt(box.length - 1)?.title ?? ''} (${box.length} total)',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                       style: VaultTypography.cardSub,
                                     ),
                                   ],
@@ -272,7 +263,7 @@ class HomePage extends StatelessWidget {
                                   MaterialPageRoute(builder: (_) => const AddVaultItemPage()),
                                 ),
                                 child: Text(
-                                  '+ LOG',
+                                  '+ TAMBAH',
                                   style: VaultTypography.mono(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w700,
@@ -290,16 +281,16 @@ class HomePage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'LIVE ASSET BENCHMARK',
+                          'REFERENSI HARDWARE (API)',
                           style: VaultTypography.mono(
                             fontSize: 11,
-                            letterSpacing: 1.2,
+                            letterSpacing: 1.1,
                             fontWeight: FontWeight.w700,
                             color: VaultColors.ink2,
                           ),
                         ),
                         Text(
-                          'LIVE API',
+                          'LAPTOPS',
                           style: VaultTypography.mono(
                             fontSize: 10,
                             color: VaultColors.accentWarm,
@@ -314,7 +305,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
 
-          // Live Asset Grid
+          // Tech Hardware Grid
           Obx(() {
             if (productController.isLoading) {
               return const SliverFillRemaining(

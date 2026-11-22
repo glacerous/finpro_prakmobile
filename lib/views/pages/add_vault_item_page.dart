@@ -36,6 +36,20 @@ class _AddVaultItemPageState extends State<AddVaultItemPage> {
     super.dispose();
   }
 
+  Future<void> _pickWarrantyDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().add(const Duration(days: 365)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 3650)),
+    );
+    if (picked == null) return;
+    final dateStr = '${picked.day}/${picked.month}/${picked.year}';
+    setState(() {
+      subtitleController.text = 'Garansi s/d $dateStr';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +58,7 @@ class _AddVaultItemPageState extends State<AddVaultItemPage> {
         backgroundColor: VaultColors.background,
         elevation: 0,
         title: Text(
-          _isEditMode ? 'Edit Aset' : 'Tambah Aset',
+          _isEditMode ? 'Edit Data Garansi' : 'Tambah Aset Garansi',
           style: VaultTypography.sectionTitle,
         ),
       ),
@@ -57,15 +71,20 @@ class _AddVaultItemPageState extends State<AddVaultItemPage> {
               controller: titleController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Nama Aset',
+                labelText: 'Nama Perangkat (mis. MacBook Pro)',
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: subtitleController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Catatan / Estimasi Nilai',
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: 'Info Garansi & Harga',
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.calendar_today_outlined),
+                  tooltip: 'Pilih Tanggal Garansi',
+                  onPressed: _pickWarrantyDate,
+                ),
               ),
             ),
             const Spacer(),
@@ -91,7 +110,7 @@ class _AddVaultItemPageState extends State<AddVaultItemPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: Text(_isEditMode ? 'Simpan' : 'Tambah'),
+              child: Text(_isEditMode ? 'Simpan Perubahan' : 'Daftarkan Garansi'),
             ),
             const SizedBox(height: 12),
           ],

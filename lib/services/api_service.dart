@@ -6,13 +6,13 @@ class ApiService {
   static const String apiUrl = 'https://dummyjson.com/products';
 
   static Future<List<Product>> getProducts() async {
-    final response = await http.get(Uri.parse('$apiUrl/category/mens-watches'));
+    final response = await http.get(Uri.parse('$apiUrl/category/laptops'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final List rawList = data['products'];
       return rawList.map((e) => Product.fromJson(e)).toList();
     } else {
-      throw Exception('Failed to load products');
+      throw Exception('Failed to load hardware catalog');
     }
   }
 
@@ -22,7 +22,7 @@ class ApiService {
       final data = jsonDecode(response.body);
       return Product.fromJson(data);
     } else {
-      throw Exception('Failed to load product details');
+      throw Exception('Failed to load hardware details');
     }
   }
 }

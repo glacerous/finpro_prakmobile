@@ -1,19 +1,60 @@
 class LocationData {
   final String name;
+  final String brand;
+  final String address;
   final double lat;
   final double lng;
 
   const LocationData({
     required this.name,
+    required this.brand,
+    required this.address,
     required this.lat,
     required this.lng,
   });
 }
 
 const List<LocationData> dummyLocations = [
-  LocationData(name: 'Kampus', lat: -7.782383704688537, lng: 110.41586606343337),
-  LocationData(name: 'Minimarket', lat: -7.783139925317062, lng: 110.41454302410676),
-  LocationData(name: 'Kantin', lat: -7.782466604443315, lng: 110.41618756029608),
-  LocationData(name: 'Masjid', lat: -7.781581023250215, lng: 110.41502197824055),
-  LocationData(name: 'Kos', lat: -7.780829957491809, lng: 110.41722718735446),
+  LocationData(
+    name: 'Asus Service Center Jogja',
+    brand: 'Asus',
+    address: 'Jl. Ring Road Utara No. 10, Sleman',
+    lat: -7.7583,
+    lng: 110.4045,
+  ),
+  LocationData(
+    name: 'Apple Authorized (iBox Ambarrukmo)',
+    brand: 'Apple',
+    address: 'Plaza Ambarrukmo Lt. 2, Sleman',
+    lat: -7.7828,
+    lng: 110.4011,
+  ),
+  LocationData(
+    name: 'Samsung Service Center Ambarrukmo',
+    brand: 'Samsung',
+    address: 'Jl. Laksda Adisucipto No. 165, Sleman',
+    lat: -7.7825,
+    lng: 110.3985,
+  ),
+  LocationData(
+    name: 'Xiaomi Service Center Sagan',
+    brand: 'Xiaomi',
+    address: 'Ruko Sagan Square, Yogyakarta',
+    lat: -7.7770,
+    lng: 110.3790,
+  ),
+  LocationData(
+    name: 'Lenovo Service Center Jogja',
+    brand: 'Lenovo',
+    address: 'Jl. Kaliurang KM 5 No. 28, Sleman',
+    lat: -7.7645,
+    lng: 110.3780,
+  ),
+  LocationData(
+    name: 'Sony Authorized Service Station',
+    brand: 'Sony',
+    address: 'Jl. C. Simanjuntak No. 42, Yogyakarta',
+    lat: -7.7791,
+    lng: 110.3732,
+  ),
 ];
