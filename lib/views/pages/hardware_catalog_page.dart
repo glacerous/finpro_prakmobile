@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../controllers/product_controller.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
+import '../../core/widgets/vault_back_button.dart';
 import '../../routes/app_routes.dart';
 
 class HardwareCatalogPage extends StatelessWidget {
@@ -17,6 +18,7 @@ class HardwareCatalogPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: VaultColors.background,
         elevation: 0,
+        leading: const VaultBackButton(),
         title: Text('Hardware & Devices', style: VaultTypography.sectionTitle),
       ),
       body: Obx(() {

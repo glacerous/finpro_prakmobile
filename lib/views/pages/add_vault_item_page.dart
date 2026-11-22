@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
+import '../../core/widgets/vault_back_button.dart';
 import '../../models/vault_item.dart';
 
 class AddVaultItemPage extends StatefulWidget {
@@ -57,6 +58,7 @@ class _AddVaultItemPageState extends State<AddVaultItemPage> {
       appBar: AppBar(
         backgroundColor: VaultColors.background,
         elevation: 0,
+        leading: const VaultBackButton(),
         title: Text(
           _isEditMode ? 'Edit Data Garansi' : 'Tambah Aset Garansi',
           style: VaultTypography.sectionTitle,

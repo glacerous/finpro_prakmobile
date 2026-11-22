@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../controllers/cart_controller.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
+import '../../core/widgets/vault_back_button.dart';
 
 class CartPage extends StatelessWidget {
   CartPage({super.key});
@@ -16,6 +17,7 @@ class CartPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: VaultColors.background,
         elevation: 0,
+        leading: const VaultBackButton(),
         title: Text('Device Wishlist', style: VaultTypography.sectionTitle),
       ),
       body: Obx(() {

@@ -4,22 +4,40 @@ import 'package:hive/hive.dart';
 import '../../controllers/cart_controller.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
+import '../../core/widgets/vault_back_button.dart';
 import '../../models/product.dart';
 import '../../models/vault_item.dart';
 
 class DetailPage extends StatelessWidget {
   DetailPage({super.key});
 
-  final Product product = Get.arguments as Product;
+  final Product? productArg = Get.arguments as Product?;
   final CartController cartController = Get.find<CartController>();
 
   @override
   Widget build(BuildContext context) {
+    if (productArg == null) {
+      return Scaffold(
+        backgroundColor: VaultColors.background,
+        appBar: AppBar(
+          backgroundColor: VaultColors.background,
+          elevation: 0,
+          leading: const VaultBackButton(),
+          title: Text('Detail Perangkat', style: VaultTypography.sectionTitle),
+        ),
+        body: Center(
+          child: Text('Data perangkat tidak tersedia.', style: VaultTypography.cardSub),
+        ),
+      );
+    }
+    final product = productArg!;
+
     return Scaffold(
       backgroundColor: VaultColors.background,
       appBar: AppBar(
         backgroundColor: VaultColors.background,
         elevation: 0,
+        leading: const VaultBackButton(),
         title: Text('Detail Perangkat', style: VaultTypography.sectionTitle),
       ),
       body: Column(

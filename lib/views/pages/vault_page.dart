@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
 import '../../core/widgets/valto_mascot.dart';
+import '../../core/widgets/vault_back_button.dart';
 import '../../models/vault_item.dart';
 import 'add_vault_item_page.dart';
 
@@ -20,6 +21,7 @@ class VaultPage extends StatelessWidget {
           ? AppBar(
               backgroundColor: VaultColors.background,
               elevation: 0,
+              leading: const VaultBackButton(),
               title: Text('My Warranty Vault', style: VaultTypography.sectionTitle),
             )
           : null,

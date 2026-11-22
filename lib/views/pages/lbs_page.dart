@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
 import '../../core/widgets/valto_mascot.dart';
+import '../../core/widgets/vault_back_button.dart';
 import '../../models/location_data.dart';
 import '../../services/notification_service.dart';
 
@@ -155,6 +156,7 @@ class _LbsPageState extends State<LbsPage> {
           ? AppBar(
               backgroundColor: VaultColors.background,
               elevation: 0,
+              leading: const VaultBackButton(),
               title: Text('Service Center Resmi', style: VaultTypography.sectionTitle),
             )
           : null,
