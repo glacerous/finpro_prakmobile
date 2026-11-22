@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
 import 'home_page.dart';
+import 'lbs_page.dart';
 import 'profile_page.dart';
 import 'vault_page.dart';
 
@@ -21,6 +22,7 @@ class _RootPageState extends State<RootPage> {
     final List<Widget> pages = [
       HomePage(nama: widget.nama),
       const VaultPage(),
+      const LbsPage(),
       ProfilePage(nama: widget.nama),
     ];
 
@@ -40,6 +42,7 @@ class _RootPageState extends State<RootPage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Beranda'),
           BottomNavigationBarItem(icon: Icon(Icons.lock_outline), label: 'Brankas'),
+          BottomNavigationBarItem(icon: Icon(Icons.location_on_outlined), label: 'Lokasi'),
           BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profil'),
         ],
       ),
