@@ -145,8 +145,8 @@ class DetailPage extends StatelessWidget {
                       cartController.addToCart(product);
                       VaultToast.show(
                         context,
-                        icon: Icons.shield_outlined,
-                        message: '${product.title} masuk Prioritas Audit',
+                        icon: Icons.bookmark_added_outlined,
+                        message: '${product.title} masuk Wishlist',
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -157,7 +157,7 @@ class DetailPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text('Prioritas Audit'),
+                    child: const Text('Tambah Wishlist'),
                   ),
                 ),
               ],

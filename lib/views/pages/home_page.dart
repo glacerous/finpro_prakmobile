@@ -176,7 +176,7 @@ class HomePage extends StatelessWidget {
                                     border: Border.all(color: Colors.white),
                                   ),
                                   child: Text(
-                                    'AUDIT (${cartController.items.length})',
+                                    'WISHLIST (${cartController.items.length})',
                                     style: VaultTypography.mono(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w700,
@@ -482,11 +482,11 @@ class HomePage extends StatelessWidget {
                           ),
                           Obx(
                             () => _buildPillarRow(
-                              icon: Icons.verified_user_outlined,
+                              icon: Icons.bookmark_border_rounded,
                               iconColor: VaultColors.pos,
-                              title: 'Priority Audit List',
-                              subtitle: 'Daftar prioritas klaim garansi',
-                              value: '${cartController.items.length} Audit',
+                              title: 'Device Wishlist',
+                              subtitle: 'Daftar perangkat incaran & estimasi harga',
+                              value: '${cartController.items.length} Saved',
                               onTap: () => Get.toNamed(AppRoutes.cart),
                             ),
                           ),

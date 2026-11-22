@@ -225,8 +225,8 @@ class ProfilePage extends StatelessWidget {
                     const Divider(height: 1, color: VaultColors.hairline),
                     Obx(
                       () => _infoRow(
-                        icon: Icons.shield_outlined,
-                        label: 'Priority Audit',
+                        icon: Icons.bookmark_border_rounded,
+                        label: 'Device Wishlist',
                         value: '${cartController.items.length} perangkat',
                       ),
                     ),

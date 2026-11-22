@@ -16,12 +16,12 @@ class CartPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: VaultColors.background,
         elevation: 0,
-        title: Text('Prioritas Audit Garansi', style: VaultTypography.sectionTitle),
+        title: Text('Device Wishlist', style: VaultTypography.sectionTitle),
       ),
       body: Obx(() {
         if (cartController.items.isEmpty) {
           return Center(
-            child: Text('Belum ada perangkat di daftar audit.', style: VaultTypography.cardSub),
+            child: Text('Belum ada perangkat di wishlist.', style: VaultTypography.cardSub),
           );
         }
         return Column(
@@ -71,7 +71,7 @@ class CartPage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Total Valuasi Audit', style: VaultTypography.cardLabel),
+                  Text('Total Estimasi Wishlist', style: VaultTypography.cardLabel),
                   Text(
                     '\$${cartController.totalPrice.toStringAsFixed(2)}',
                     style: VaultTypography.mono(
