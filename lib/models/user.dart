@@ -11,7 +11,7 @@ class User {
 }
 
 const User user1 = User(
-  username: 'budi123',
-  password: 'password123',
-  nama: 'Budi Doremi',
+  username: 'a',
+  password: 'a',
+  nama: 'admin',
 );
