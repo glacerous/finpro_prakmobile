@@ -397,7 +397,7 @@ class HomePage extends StatelessWidget {
                             label: 'Service Radar',
                             onTap: () => Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => const LbsPage()),
+                              MaterialPageRoute(builder: (_) => const LbsPage(showBack: true)),
                             ),
                           ),
                         ),
@@ -434,7 +434,7 @@ class HomePage extends StatelessWidget {
                               value: '${box.length} Items',
                               onTap: () => Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (_) => const VaultPage()),
+                                MaterialPageRoute(builder: (_) => const VaultPage(showBack: true)),
                               ),
                             ),
                           ),
@@ -470,7 +470,7 @@ class HomePage extends StatelessWidget {
                             value: 'Radar',
                             onTap: () => Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => const LbsPage()),
+                              MaterialPageRoute(builder: (_) => const LbsPage(showBack: true)),
                             ),
                           ),
                           const Divider(

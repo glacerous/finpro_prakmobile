@@ -8,7 +8,9 @@ import '../../models/location_data.dart';
 import '../../services/notification_service.dart';
 
 class LbsPage extends StatefulWidget {
-  const LbsPage({super.key});
+  final bool showBack;
+
+  const LbsPage({super.key, this.showBack = false});
 
   @override
   State<LbsPage> createState() => _LbsPageState();
@@ -149,6 +151,13 @@ class _LbsPageState extends State<LbsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: VaultColors.background,
+      appBar: widget.showBack
+          ? AppBar(
+              backgroundColor: VaultColors.background,
+              elevation: 0,
+              title: Text('LBS Care Centers', style: VaultTypography.sectionTitle),
+            )
+          : null,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),

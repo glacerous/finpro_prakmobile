@@ -8,12 +8,21 @@ import '../../models/vault_item.dart';
 import 'add_vault_item_page.dart';
 
 class VaultPage extends StatelessWidget {
-  const VaultPage({super.key});
+  final bool showBack;
+
+  const VaultPage({super.key, this.showBack = false});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: VaultColors.background,
+      appBar: showBack
+          ? AppBar(
+              backgroundColor: VaultColors.background,
+              elevation: 0,
+              title: Text('My Warranty Vault', style: VaultTypography.sectionTitle),
+            )
+          : null,
       body: SafeArea(
         child: ValueListenableBuilder(
           valueListenable: Hive.box<VaultItem>('vault_items').listenable(),

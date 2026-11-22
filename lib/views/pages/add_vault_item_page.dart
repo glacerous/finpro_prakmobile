@@ -90,9 +90,19 @@ class _AddVaultItemPageState extends State<AddVaultItemPage> {
             const Spacer(),
             ElevatedButton(
               onPressed: () {
+                final title = titleController.text.trim();
+                if (title.isEmpty) {
+                  VaultToast.show(
+                    context,
+                    icon: Icons.error_outline_rounded,
+                    iconColor: VaultColors.neg,
+                    message: 'Nama perangkat wajib diisi.',
+                  );
+                  return;
+                }
                 final box = Hive.box<VaultItem>('vault_items');
                 final newItem = VaultItem(
-                  title: titleController.text.trim(),
+                  title: title,
                   subtitle: subtitleController.text.trim(),
                 );
                 if (_isEditMode) {
