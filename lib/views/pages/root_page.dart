@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../core/constants/colors.dart';
+import '../../models/user.dart';
 import 'home_page.dart';
 import 'lbs_page.dart';
 import 'profile_page.dart';
 import 'vault_page.dart';
 
 class RootPage extends StatefulWidget {
-  final String nama;
-
-  const RootPage({super.key, required this.nama});
+  const RootPage({super.key});
 
   @override
   State<RootPage> createState() => _RootPageState();
@@ -19,11 +19,13 @@ class _RootPageState extends State<RootPage> {
 
   @override
   Widget build(BuildContext context) {
+    final String nama = (Get.arguments as String?) ?? user1.nama;
+
     final List<Widget> pages = [
-      HomePage(nama: widget.nama),
+      HomePage(nama: nama),
       const VaultPage(),
       const LbsPage(),
-      ProfilePage(nama: widget.nama),
+      ProfilePage(nama: nama),
     ];
 
     return Scaffold(

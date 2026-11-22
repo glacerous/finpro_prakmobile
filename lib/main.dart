@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'core/constants/colors.dart';
 import 'models/vault_item.dart';
+import 'routes/app_pages.dart';
+import 'routes/app_routes.dart';
 import 'services/notification_service.dart';
-import 'views/pages/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,14 +22,15 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'VAULTED',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: VaultColors.background,
         colorScheme: ColorScheme.fromSeed(seedColor: VaultColors.accent),
       ),
-      home: const LoginPage(),
+      initialRoute: AppRoutes.login,
+      getPages: AppPages.routes,
     );
   }
 }

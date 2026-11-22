@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
-import 'login_page.dart';
+import '../../routes/app_routes.dart';
 
 class ProfilePage extends StatelessWidget {
   final String nama;
 
   const ProfilePage({super.key, required this.nama});
 
-  Future<void> _logout(BuildContext context) async {
+  Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('loginData', false);
-    if (context.mounted) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginPage()),
-        (route) => false,
-      );
-    }
+    Get.offAllNamed(AppRoutes.login);
   }
 
   @override
@@ -42,7 +37,7 @@ class ProfilePage extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => _logout(context),
+                onPressed: _logout,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: VaultColors.neg,
                   foregroundColor: Colors.white,

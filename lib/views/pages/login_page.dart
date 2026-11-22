@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
 import '../../models/user.dart';
-import 'root_page.dart';
+import '../../routes/app_routes.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,7 +17,6 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool isLoginFailed = false;
-  bool isLoggedIn = false;
 
   @override
   void initState() {
@@ -27,11 +27,8 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _checkLogin() async {
     final loginData = await SharedPreferences.getInstance();
     final adaLogin = loginData.getBool('loginData') ?? false;
-    if (adaLogin && mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => RootPage(nama: user1.nama)),
-      );
+    if (adaLogin) {
+      Get.offAllNamed(AppRoutes.root, arguments: user1.nama);
     }
   }
 
@@ -42,17 +39,9 @@ class _LoginPageState extends State<LoginPage> {
     if (username == user1.username && password == user1.password) {
       final loginData = await SharedPreferences.getInstance();
       await loginData.setBool('loginData', true);
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => RootPage(nama: user1.nama)),
-        );
-      }
+      Get.offAllNamed(AppRoutes.root, arguments: user1.nama);
     } else {
-      setState(() {
-        isLoggedIn = false;
-        isLoginFailed = true;
-      });
+      setState(() => isLoginFailed = true);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Login gagal: Username atau Password salah'),
@@ -110,7 +99,6 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Top 25% Glance Only
               const Spacer(),
               Text(
                 'VAULTED',
@@ -126,56 +114,34 @@ class _LoginPageState extends State<LoginPage> {
               Text(
                 'Luxury Asset Vault',
                 textAlign: TextAlign.center,
-                style: VaultTypography.sans(
-                  fontSize: 13,
-                  color: VaultColors.ink2,
-                ),
+                style: VaultTypography.sans(fontSize: 13, color: VaultColors.ink2),
               ),
               const Spacer(),
-              // Bottom 40% Thumb Touch Zone
-              if (!isLoggedIn) ...[
-                _inputField(
-                  controller: _usernameController,
-                  hint: 'Username',
-                  isLoginFailed: isLoginFailed,
-                ),
-                const SizedBox(height: 12),
-                _inputField(
-                  controller: _passwordController,
-                  hint: 'Password',
-                  isLoginFailed: isLoginFailed,
-                  obscure: true,
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _login,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: VaultColors.primaryButton,
-                    foregroundColor: VaultColors.primaryButtonInk,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text('Login'),
-                ),
-              ] else ...[
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: VaultColors.card,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: VaultColors.hairline),
-                  ),
-                  child: Column(
-                    children: [
-                      Text('Halo, ${user1.nama}!', style: VaultTypography.sectionTitle),
-                      const SizedBox(height: 6),
-                      Text('Username: ${user1.username}', style: VaultTypography.cardSub),
-                    ],
+              _inputField(
+                controller: _usernameController,
+                hint: 'Username',
+                isLoginFailed: isLoginFailed,
+              ),
+              const SizedBox(height: 12),
+              _inputField(
+                controller: _passwordController,
+                hint: 'Password',
+                isLoginFailed: isLoginFailed,
+                obscure: true,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _login,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: VaultColors.primaryButton,
+                  foregroundColor: VaultColors.primaryButtonInk,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-              ],
+                child: const Text('Login'),
+              ),
               const SizedBox(height: 24),
             ],
           ),
