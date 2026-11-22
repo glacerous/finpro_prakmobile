@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../controllers/cart_controller.dart';
@@ -9,8 +10,9 @@ import '../../core/constants/typography.dart';
 import '../../core/widgets/valto_mascot.dart';
 import '../../models/vault_item.dart';
 import '../../routes/app_routes.dart';
-import '../widgets/product_card.dart';
 import 'add_vault_item_page.dart';
+import 'lbs_page.dart';
+import 'vault_page.dart';
 
 class HomePage extends StatelessWidget {
   final String nama;
@@ -20,15 +22,105 @@ class HomePage extends StatelessWidget {
   final ProductController productController = Get.find<ProductController>();
   final CartController cartController = Get.find<CartController>();
 
+  Widget _buildActionTile({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+        decoration: BoxDecoration(
+          color: VaultColors.cardHover,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: VaultColors.hairline),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 18, color: VaultColors.ink),
+            const SizedBox(width: 8),
+            Text(label, style: VaultTypography.cardLabel),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPillarRow({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required String value,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(20),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: VaultColors.hairline),
+              ),
+              child: Icon(icon, size: 20, color: iconColor),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: VaultTypography.cardLabel),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: VaultTypography.cardSub,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              value,
+              style: VaultTypography.mono(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w700,
+                color: VaultColors.accentWarm,
+              ),
+            ),
+            const SizedBox(width: 4),
+            const Icon(Icons.chevron_right_rounded, size: 18, color: VaultColors.ink3),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: VaultColors.background,
-      body: CustomScrollView(
-        slivers: [
-          // Scenic Alpine Dawn Hero Header
-          SliverToBoxAdapter(
-            child: Stack(
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // 1. SCENIC ALPINE DAWN HEADER
+            Stack(
               children: [
                 Positioned.fill(
                   child: Image.asset(
@@ -54,7 +146,7 @@ class HomePage extends StatelessWidget {
                 SafeArea(
                   bottom: false,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(22, 14, 22, 42),
+                    padding: const EdgeInsets.fromLTRB(22, 14, 22, 54),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -76,39 +168,27 @@ class HomePage extends StatelessWidget {
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 11,
-                                    vertical: 6,
+                                    vertical: 5,
                                   ),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withValues(alpha: 0.92),
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(color: Colors.white),
                                   ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Icon(
-                                        Icons.verified_user_outlined,
-                                        size: 15,
-                                        color: VaultColors.ink,
-                                      ),
-                                      const SizedBox(width: 5),
-                                      Text(
-                                        'AUDIT (${cartController.items.length})',
-                                        style: VaultTypography.mono(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w700,
-                                          letterSpacing: 0.6,
-                                          color: VaultColors.ink,
-                                        ),
-                                      ),
-                                    ],
+                                  child: Text(
+                                    'AUDIT (${cartController.items.length})',
+                                    style: VaultTypography.mono(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      color: VaultColors.ink,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 26),
                         Text(
                           'Selamat datang, $nama.',
                           style: VaultTypography.sans(
@@ -127,7 +207,7 @@ class HomePage extends StatelessWidget {
                                 Text(
                                   '${box.length} Perangkat',
                                   style: VaultTypography.mono(
-                                    fontSize: 34,
+                                    fontSize: 36,
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: -0.8,
                                     color: Colors.white,
@@ -146,23 +226,23 @@ class HomePage extends StatelessWidget {
                             );
                           },
                         ),
-                        const SizedBox(height: 28),
-                        // Frosted Glass Sentinel Bar with Valto Perched on Top
+                        const SizedBox(height: 38),
+                        // Frosted Glass Bar with Valto Perched on Top
                         Stack(
                           clipBehavior: Clip.none,
                           children: [
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(24),
+                              borderRadius: BorderRadius.circular(26),
                               child: BackdropFilter(
                                 filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
                                 child: Container(
-                                  height: 46,
+                                  height: 48,
                                   padding: const EdgeInsets.symmetric(horizontal: 16),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withValues(alpha: 0.22),
-                                    borderRadius: BorderRadius.circular(24),
+                                    borderRadius: BorderRadius.circular(26),
                                     border: Border.all(
-                                      color: Colors.white.withValues(alpha: 0.38),
+                                      color: Colors.white.withValues(alpha: 0.42),
                                     ),
                                   ),
                                   child: Row(
@@ -176,8 +256,8 @@ class HomePage extends StatelessWidget {
                                       Text(
                                         'Valto Warranty Sentinel · Active',
                                         style: VaultTypography.sans(
-                                          fontSize: 12.5,
-                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
                                           color: Colors.white,
                                         ),
                                       ),
@@ -187,8 +267,8 @@ class HomePage extends StatelessWidget {
                               ),
                             ),
                             const Positioned(
-                              right: 12,
-                              top: -26,
+                              top: -38,
+                              right: 24,
                               child: ValtoMascot(size: 46, mood: ValtoMood.vigilant),
                             ),
                           ],
@@ -199,144 +279,226 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             ),
-          ),
 
-          // Overlapping Rounded Porcelain Sheet
-          SliverToBoxAdapter(
-            child: Transform.translate(
-              offset: const Offset(0, -20),
+            // 2. MAIN WHITE SHEET (Seamlessly Overlapping Scenic Header)
+            Transform.translate(
+              offset: const Offset(0, -32),
               child: Container(
+                width: double.infinity,
                 decoration: const BoxDecoration(
-                  color: VaultColors.background,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x10000000),
+                      blurRadius: 20,
+                      offset: Offset(0, -6),
+                    ),
+                  ],
                 ),
-                padding: const EdgeInsets.fromLTRB(16, 20, 16, 6),
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // My Warranty Vault Quick Card
+                    Text(
+                      'RECENT ACTIVITY',
+                      style: VaultTypography.mono(
+                        fontSize: 10.5,
+                        letterSpacing: 1.2,
+                        color: VaultColors.ink2,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Dynamic Activity Items from Hive
                     ValueListenableBuilder(
                       valueListenable: Hive.box<VaultItem>('vault_items').listenable(),
                       builder: (context, box, _) {
-                        return Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: VaultColors.card,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: VaultColors.hairline),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: VaultColors.badgeBg,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const Icon(
-                                  Icons.receipt_long_outlined,
-                                  color: VaultColors.accentWarm,
-                                  size: 20,
+                        if (box.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            child: Center(
+                              child: Text(
+                                'Belum ada garansi terdaftar. Tambah aset untuk mulai.',
+                                style: VaultTypography.sans(
+                                  fontSize: 12,
+                                  color: VaultColors.ink3,
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Brankas Garansi Saya', style: VaultTypography.cardLabel),
-                                    Text(
-                                      box.isEmpty
-                                          ? 'Belum ada perangkat terdaftar'
-                                          : '${box.getAt(box.length - 1)?.title ?? ''} (${box.length} total)',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: VaultTypography.cardSub,
-                                    ),
-                                  ],
+                            ),
+                          );
+                        }
+                        final count = box.length > 3 ? 3 : box.length;
+                        return Column(
+                          children: [
+                            for (int i = 0; i < count; i++) ...[
+                              if (i > 0)
+                                const Divider(
+                                  height: 18,
+                                  thickness: 1,
+                                  color: VaultColors.hairline,
                                 ),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (_) => const AddVaultItemPage()),
-                                ),
-                                child: Text(
-                                  '+ TAMBAH',
-                                  style: VaultTypography.mono(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                    color: VaultColors.accentWarm,
-                                  ),
-                                ),
+                              Builder(
+                                builder: (_) {
+                                  final item = box.getAt(box.length - 1 - i)!;
+                                  return Row(
+                                    children: [
+                                      Container(
+                                        width: 36,
+                                        height: 36,
+                                        decoration: BoxDecoration(
+                                          color: VaultColors.posBg,
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: const Icon(
+                                          Icons.verified_user_outlined,
+                                          size: 18,
+                                          color: VaultColors.pos,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(item.title, style: VaultTypography.cardLabel),
+                                            Text(item.subtitle, style: VaultTypography.cardSub),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
                               ),
                             ],
-                          ),
+                          ],
                         );
                       },
                     ),
                     const SizedBox(height: 18),
+
+                    // Quick Action Buttons (2-button row, exact original style)
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'REFERENSI HARDWARE (API)',
-                          style: VaultTypography.mono(
-                            fontSize: 11,
-                            letterSpacing: 1.1,
-                            fontWeight: FontWeight.w700,
-                            color: VaultColors.ink2,
+                        Expanded(
+                          child: _buildActionTile(
+                            icon: Icons.add_circle_outline_rounded,
+                            label: 'Add Asset',
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const AddVaultItemPage()),
+                            ),
                           ),
                         ),
-                        Text(
-                          'LAPTOPS',
-                          style: VaultTypography.mono(
-                            fontSize: 10,
-                            color: VaultColors.accentWarm,
-                            fontWeight: FontWeight.w600,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildActionTile(
+                            icon: Icons.near_me_outlined,
+                            label: 'Service Radar',
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const LbsPage()),
+                            ),
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // YOUR VAULT SPACES (Exact Original Pillar Container)
+                    Text(
+                      'YOUR VAULT SPACES',
+                      style: VaultTypography.mono(
+                        fontSize: 10.5,
+                        letterSpacing: 1.2,
+                        color: VaultColors.ink2,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    Container(
+                      decoration: BoxDecoration(
+                        color: VaultColors.cardHover,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: VaultColors.hairline),
+                      ),
+                      child: Column(
+                        children: [
+                          ValueListenableBuilder(
+                            valueListenable: Hive.box<VaultItem>('vault_items').listenable(),
+                            builder: (context, box, _) => _buildPillarRow(
+                              icon: Icons.lock_outline_rounded,
+                              iconColor: VaultColors.accent,
+                              title: 'My Warranty Vault',
+                              subtitle: 'Perangkat & masa berlaku garansi (Hive)',
+                              value: '${box.length} Items',
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const VaultPage()),
+                              ),
+                            ),
+                          ),
+                          const Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: VaultColors.hairline,
+                            indent: 68,
+                            endIndent: 16,
+                          ),
+                          Obx(
+                            () => _buildPillarRow(
+                              icon: Icons.laptop_mac_rounded,
+                              iconColor: VaultColors.ink,
+                              title: 'Hardware & Devices',
+                              subtitle: 'Referensi spek & valuasi laptop (API)',
+                              value: '${productController.products.length} Live',
+                              onTap: () => Get.toNamed(AppRoutes.catalog),
+                            ),
+                          ),
+                          const Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: VaultColors.hairline,
+                            indent: 68,
+                            endIndent: 16,
+                          ),
+                          _buildPillarRow(
+                            icon: Icons.near_me_rounded,
+                            iconColor: VaultColors.ink2,
+                            title: 'LBS Care Centers',
+                            subtitle: 'Service center resmi Jogja & reminder klaim',
+                            value: 'Radar',
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const LbsPage()),
+                            ),
+                          ),
+                          const Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: VaultColors.hairline,
+                            indent: 68,
+                            endIndent: 16,
+                          ),
+                          Obx(
+                            () => _buildPillarRow(
+                              icon: Icons.verified_user_outlined,
+                              iconColor: VaultColors.pos,
+                              title: 'Priority Audit List',
+                              subtitle: 'Daftar prioritas klaim garansi (GetX)',
+                              value: '${cartController.items.length} Audit',
+                              onTap: () => Get.toNamed(AppRoutes.cart),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-          ),
-
-          // Tech Hardware Grid
-          Obx(() {
-            if (productController.isLoading) {
-              return const SliverFillRemaining(
-                child: Center(
-                  child: CircularProgressIndicator(color: VaultColors.accent),
-                ),
-              );
-            }
-            return SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-              sliver: SliverGrid(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final product = productController.products[index];
-                    return ProductCard(
-                      product: product,
-                      onTap: () => Get.toNamed(AppRoutes.detail, arguments: product),
-                    );
-                  },
-                  childCount: productController.products.length,
-                ),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.74,
-                ),
-              ),
-            );
-          }),
-        ],
+          ],
+        ),
       ),
     );
   }
