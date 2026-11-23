@@ -22,14 +22,21 @@ class _HeaderVideoBackgroundState extends State<HeaderVideoBackground> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset(widget.videoAsset)
-      ..setLooping(true)
-      ..setVolume(0)
-      ..initialize().then((_) {
-        if (!mounted) return;
-        setState(() => _ready = true);
-        _controller.play();
-      }).catchError((_) {});
+    _initVideo();
+  }
+
+  Future<void> _initVideo() async {
+    _controller = VideoPlayerController.asset(widget.videoAsset);
+    try {
+      await _controller.initialize();
+      await _controller.setVolume(0.0);
+      await _controller.setLooping(true);
+      await _controller.play();
+      if (!mounted) return;
+      setState(() => _ready = true);
+    } catch (e) {
+      debugPrint('HeaderVideoBackground error: $e');
+    }
   }
 
   @override
@@ -41,13 +48,18 @@ class _HeaderVideoBackgroundState extends State<HeaderVideoBackground> {
   @override
   Widget build(BuildContext context) {
     if (_ready && _controller.value.isInitialized) {
-      return FittedBox(
-        fit: BoxFit.cover,
-        clipBehavior: Clip.hardEdge,
-        child: SizedBox(
-          width: _controller.value.size.width,
-          height: _controller.value.size.height,
-          child: VideoPlayer(_controller),
+      final size = _controller.value.size;
+      final w = size.width > 0 ? size.width : 1280.0;
+      final h = size.height > 0 ? size.height : 720.0;
+      return SizedBox.expand(
+        child: FittedBox(
+          fit: BoxFit.cover,
+          clipBehavior: Clip.hardEdge,
+          child: SizedBox(
+            width: w,
+            height: h,
+            child: VideoPlayer(_controller),
+          ),
         ),
       );
     }
