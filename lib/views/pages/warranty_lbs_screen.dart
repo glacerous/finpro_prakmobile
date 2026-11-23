@@ -21,80 +21,140 @@ class _WarrantyLbsScreenState extends State<WarrantyLbsScreen> {
   Position? _userPosition;
   bool _isLoading = false;
   String _selectedBrand = 'All';
-  DateTime? _scheduledTime;
   LocationData? _selectedCenter;
 
   Future<void> _locateUser() async {
     HapticFeedback.lightImpact();
     setState(() => _isLoading = true);
 
-    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      if (mounted) {
-        VaultToast.show(
-          context,
-          icon: Icons.location_off_outlined,
-          iconColor: VaultColors.neg,
-          message: 'GPS tidak aktif.',
-        );
-      }
-      setState(() => _isLoading = false);
-      return;
-    }
-
-    var permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
         if (mounted) {
           VaultToast.show(
             context,
             icon: Icons.location_off_outlined,
             iconColor: VaultColors.neg,
-            message: 'Permission lokasi ditolak.',
+            message: 'GPS tidak aktif.',
           );
         }
-        setState(() => _isLoading = false);
         return;
       }
-    }
 
-    if (permission == LocationPermission.deniedForever) {
-      if (mounted) {
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          if (mounted) {
+            VaultToast.show(
+              context,
+              icon: Icons.location_off_outlined,
+              iconColor: VaultColors.neg,
+              message: 'Permission lokasi ditolak.',
+            );
+          }
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          VaultToast.show(
+            context,
+            icon: Icons.location_off_outlined,
+            iconColor: VaultColors.neg,
+            message: 'Permission lokasi diblokir.',
+          );
+        }
+        return;
+      }
+
+      // coba posisi terkini dengan timeout, fallback ke lokasi terakhir jika emulator lambat
+      Position? pos;
+      try {
+        pos = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            timeLimit: Duration(seconds: 10),
+          ),
+        );
+      } catch (_) {
+        pos = await Geolocator.getLastKnownPosition();
+      }
+
+      if (!mounted) return;
+      if (pos == null) {
         VaultToast.show(
           context,
           icon: Icons.location_off_outlined,
           iconColor: VaultColors.neg,
-          message: 'Permission lokasi diblokir.',
+          message: 'Gagal mendapatkan koordinat GPS.',
         );
+        return;
       }
-      setState(() => _isLoading = false);
+      setState(() => _userPosition = pos);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  // kembalikan datetime baru (null jika user tekan cancel) agar tidak pakai jadwal lama
+  Future<DateTime?> _pickDateTime() async {
+    final now = DateTime.now();
+    final date = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 365)),
+    );
+    if (date == null || !mounted) return null;
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(now.add(const Duration(minutes: 1))),
+    );
+    if (time == null) return null;
+    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+  }
+
+  Future<void> _handleScheduleReminder(LocationData target) async {
+    final picked = await _pickDateTime();
+    if (picked == null || !mounted) return;
+
+    if (!picked.isAfter(DateTime.now())) {
+      VaultToast.show(
+        context,
+        icon: Icons.error_outline_rounded,
+        iconColor: VaultColors.neg,
+        message: 'Pilih waktu di masa depan.',
+      );
       return;
     }
 
-    final pos = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
-    );
-    if (!mounted) return;
-    setState(() {
-      _userPosition = pos;
-      _isLoading = false;
-    });
-  }
-
-  Future<void> _pickDateTime() async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-    if (date == null || !mounted) return;
-    final time = await showTimePicker(context: context, initialTime: TimeOfDay.now());
-    if (time == null) return;
-    setState(() {
-      _scheduledTime = DateTime(date.year, date.month, date.day, time.hour, time.minute);
-    });
+    try {
+      await NotificationService().scheduleNotification(
+        id: 1,
+        title: 'Klaim Garansi: ${target.name}',
+        body: 'Waktunya kunjungi ${target.name}',
+        scheduledTime: picked,
+      );
+      if (!mounted) return;
+      final hh = picked.hour.toString().padLeft(2, '0');
+      final mm = picked.minute.toString().padLeft(2, '0');
+      VaultToast.show(
+        context,
+        icon: Icons.alarm_on_outlined,
+        message: 'Reminder ${target.name} diset jam $hh:$mm',
+      );
+    } catch (e) {
+      if (mounted) {
+        VaultToast.show(
+          context,
+          icon: Icons.error_outline_rounded,
+          iconColor: VaultColors.neg,
+          message: 'Gagal menjadwalkan reminder.',
+        );
+      }
+    }
   }
 
   @override
@@ -119,6 +179,11 @@ class _WarrantyLbsScreenState extends State<WarrantyLbsScreen> {
         (a, b) => ((a['dist'] as double?) ?? 0).compareTo((b['dist'] as double?) ?? 0),
       );
     }
+
+    final defaultTarget = filtered.isNotEmpty
+        ? filtered.first['loc'] as LocationData
+        : dummyLocations.first;
+    final reminderTarget = _selectedCenter ?? defaultTarget;
 
     return Scaffold(
       backgroundColor: VaultColors.background,
@@ -188,7 +253,7 @@ class _WarrantyLbsScreenState extends State<WarrantyLbsScreen> {
               ),
             ),
 
-            // Service Center List
+            // Service Center List (tap card untuk pilih tujuan reminder)
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -197,52 +262,66 @@ class _WarrantyLbsScreenState extends State<WarrantyLbsScreen> {
                   final loc = filtered[index]['loc'] as LocationData;
                   final dist = filtered[index]['dist'] as double?;
                   final isNear = dist != null && dist < 2000;
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: isNear ? VaultColors.posBg : VaultColors.card,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isNear ? VaultColors.pos : VaultColors.hairline,
+                  final isSelected = _selectedCenter?.name == loc.name;
+                  return GestureDetector(
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      setState(() => _selectedCenter = isSelected ? null : loc);
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: isNear ? VaultColors.posBg : VaultColors.card,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isSelected
+                              ? VaultColors.ink
+                              : (isNear ? VaultColors.pos : VaultColors.hairline),
+                          width: isSelected ? 1.5 : 1,
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: VaultColors.cardHover,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(
-                            Icons.build_circle_outlined,
-                            color: isNear ? VaultColors.pos : VaultColors.accent,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(loc.name, style: VaultTypography.cardLabel),
-                              Text(loc.address, style: VaultTypography.cardSub),
-                            ],
-                          ),
-                        ),
-                        if (dist != null)
-                          Text(
-                            dist < 1000
-                                ? '${dist.toStringAsFixed(0)} m'
-                                : '${(dist / 1000).toStringAsFixed(1)} km',
-                            style: VaultTypography.mono(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: isNear ? VaultColors.pos : VaultColors.ink,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: VaultColors.cardHover,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              isSelected
+                                  ? Icons.check_circle_rounded
+                                  : Icons.build_circle_outlined,
+                              color: isSelected
+                                  ? VaultColors.ink
+                                  : (isNear ? VaultColors.pos : VaultColors.accent),
                             ),
                           ),
-                      ],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(loc.name, style: VaultTypography.cardLabel),
+                                Text(loc.address, style: VaultTypography.cardSub),
+                              ],
+                            ),
+                          ),
+                          if (dist != null)
+                            Text(
+                              dist < 1000
+                                  ? '${dist.toStringAsFixed(0)} m'
+                                  : '${(dist / 1000).toStringAsFixed(1)} km',
+                              style: VaultTypography.mono(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: isNear ? VaultColors.pos : VaultColors.ink,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -311,24 +390,7 @@ class _WarrantyLbsScreenState extends State<WarrantyLbsScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: ElevatedButton.icon(
-                          onPressed: () async {
-                            await _pickDateTime();
-                            if (_scheduledTime == null || !context.mounted) return;
-                            final target = _selectedCenter ?? dummyLocations.first;
-                            await NotificationService().scheduleNotification(
-                              id: 1,
-                              title: 'Klaim Garansi: ${target.name}',
-                              body: 'Waktunya kunjungi ${target.name}',
-                              scheduledTime: _scheduledTime!,
-                            );
-                            if (context.mounted) {
-                              VaultToast.show(
-                                context,
-                                icon: Icons.alarm_on_outlined,
-                                message: 'Pengingat klaim garansi dijadwalkan!',
-                              );
-                            }
-                          },
+                          onPressed: () => _handleScheduleReminder(reminderTarget),
                           icon: const Icon(Icons.alarm, size: 16),
                           label: const Text('Set Reminder'),
                           style: ElevatedButton.styleFrom(

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -24,6 +25,7 @@ class NotificationService {
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>();
     await androidPlatform?.requestNotificationsPermission();
+    await androidPlatform?.requestExactAlarmsPermission();
 
     const channel = AndroidNotificationChannel(
       'reminder_channel',
@@ -64,20 +66,34 @@ class NotificationService {
     );
     const notifDetails = NotificationDetails(android: androidDetails);
 
-    await notificationPlugin.zonedSchedule(
-      id,
-      title,
-      body,
-      tz.TZDateTime(
-        tz.local,
-        scheduledTime.year,
-        scheduledTime.month,
-        scheduledTime.day,
-        scheduledTime.hour,
-        scheduledTime.minute,
-      ),
-      notifDetails,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    final tzTime = tz.TZDateTime(
+      tz.local,
+      scheduledTime.year,
+      scheduledTime.month,
+      scheduledTime.day,
+      scheduledTime.hour,
+      scheduledTime.minute,
     );
+
+    // fallback ke inexact jika izin exact alarm ditolak oleh user/os
+    try {
+      await notificationPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        tzTime,
+        notifDetails,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      );
+    } on PlatformException {
+      await notificationPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        tzTime,
+        notifDetails,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      );
+    }
   }
 }
