@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/cart_controller.dart';
 import '../../controllers/product_controller.dart';
+import '../../controllers/steam_controller.dart';
 import '../../controllers/vault_controller.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
@@ -18,6 +19,7 @@ class HomePage extends StatelessWidget {
   HomePage({super.key, required this.nama});
 
   final VaultController vaultController = Get.find<VaultController>();
+  final SteamController steamController = Get.find<SteamController>();
   final ProductController productController = Get.find<ProductController>();
   final CartController cartController = Get.find<CartController>();
 
@@ -273,6 +275,10 @@ class HomePage extends StatelessWidget {
                         const SizedBox(height: 16),
                         Obx(() {
                           final visible = vaultController.isBalanceVisible.value;
+                          final netWorth = vaultController.totalValuation +
+                              steamController.totalSteamValue;
+                          final totalCount = vaultController.items.length +
+                              steamController.assets.length;
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -295,8 +301,7 @@ class HomePage extends StatelessWidget {
                                       alignment: Alignment.centerLeft,
                                       child: Text(
                                         visible
-                                            ? vaultController
-                                                .formatRawNumber(vaultController.totalValuation)
+                                            ? vaultController.formatRawNumber(netWorth)
                                             : '••••••••',
                                         style: VaultTypography.mono(
                                           fontSize: 38,
@@ -311,7 +316,7 @@ class HomePage extends StatelessWidget {
                               ),
                               const SizedBox(height: 3),
                               Text(
-                                '${vaultController.items.length} vault items active',
+                                '$totalCount vault items active',
                                 style: VaultTypography.sans(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
@@ -600,6 +605,23 @@ class HomePage extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
+                          Obx(
+                            () => _buildPillarRow(
+                              icon: Icons.sports_esports_rounded,
+                              iconColor: VaultColors.accent,
+                              title: 'Steam & Gaming Vault',
+                              subtitle: '${steamController.assets.length} CS2 items · Live Steam API',
+                              value: vaultController.formatAmount(steamController.totalSteamValue),
+                              onTap: () => Get.toNamed(AppRoutes.steam),
+                            ),
+                          ),
+                          const Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: VaultColors.hairline,
+                            indent: 68,
+                            endIndent: 16,
+                          ),
                           Obx(
                             () => _buildPillarRow(
                               icon: Icons.laptop_mac_rounded,
