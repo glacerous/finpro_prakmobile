@@ -9,7 +9,7 @@ import '../../routes/app_routes.dart';
 import 'home_page.dart';
 import 'profile_page.dart';
 import 'saran_kesan_screen.dart';
-import 'search_radar_screen.dart';
+import 'warranty_lbs_screen.dart';
 
 class RootPage extends StatefulWidget {
   const RootPage({super.key});
@@ -149,7 +149,7 @@ class _RootPageState extends State<RootPage> {
 
     final List<Widget> pages = [
       HomePage(nama: nama),
-      const SearchRadarScreen(),
+      const WarrantyLbsScreen(),
       ProfilePage(nama: nama),
       const SaranKesanScreen(),
     ];
