@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../controllers/cart_controller.dart';
+import '../../controllers/steam_controller.dart';
 import '../../controllers/vault_controller.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
@@ -15,7 +15,7 @@ class ProfilePage extends StatelessWidget {
 
   ProfilePage({super.key, required this.nama});
 
-  final CartController cartController = Get.find<CartController>();
+  final SteamController steamController = Get.find<SteamController>();
   final VaultController vaultController = Get.find<VaultController>();
 
   Future<void> _logout() async {
@@ -224,9 +224,9 @@ class ProfilePage extends StatelessWidget {
                     const Divider(height: 1, color: VaultColors.hairline),
                     Obx(
                       () => _infoRow(
-                        icon: Icons.bookmark_border_rounded,
-                        label: 'Device Wishlist',
-                        value: '${cartController.items.length} perangkat',
+                        icon: Icons.sports_esports_outlined,
+                        label: 'Steam Vault',
+                        value: '${steamController.assets.length} items',
                       ),
                     ),
                   ],

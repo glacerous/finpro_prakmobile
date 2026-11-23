@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../../controllers/cart_controller.dart';
-import '../../controllers/product_controller.dart';
 import '../../controllers/steam_controller.dart';
 import '../../controllers/vault_controller.dart';
 import '../../core/constants/colors.dart';
@@ -20,8 +18,6 @@ class HomePage extends StatelessWidget {
 
   final VaultController vaultController = Get.find<VaultController>();
   final SteamController steamController = Get.find<SteamController>();
-  final ProductController productController = Get.find<ProductController>();
-  final CartController cartController = Get.find<CartController>();
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
@@ -577,9 +573,9 @@ class HomePage extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: _buildActionTile(
-                            icon: Icons.laptop_mac_rounded,
-                            label: 'Hardware Ref',
-                            onTap: () => Get.toNamed(AppRoutes.catalog),
+                            icon: Icons.near_me_outlined,
+                            label: 'Service Radar',
+                            onTap: () => Get.toNamed(AppRoutes.lbs),
                           ),
                         ),
                       ],
@@ -661,23 +657,6 @@ class HomePage extends StatelessWidget {
                             subtitle: 'Live conversion for 4 currencies & 4 zones',
                             value: 'Convert',
                             onTap: () => Get.toNamed(AppRoutes.converter),
-                          ),
-                          const Divider(
-                            height: 1,
-                            thickness: 1,
-                            color: VaultColors.hairline,
-                            indent: 68,
-                            endIndent: 16,
-                          ),
-                          Obx(
-                            () => _buildPillarRow(
-                              icon: Icons.bookmark_border_rounded,
-                              iconColor: VaultColors.pos,
-                              title: 'Device Wishlist',
-                              subtitle: 'Saved hardware benchmarks from catalog',
-                              value: '${cartController.items.length} Saved',
-                              onTap: () => Get.toNamed(AppRoutes.cart),
-                            ),
                           ),
                         ],
                       ),
