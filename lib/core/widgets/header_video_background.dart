@@ -33,7 +33,14 @@ class _HeaderVideoBackgroundState extends State<HeaderVideoBackground> {
       await _controller.setLooping(true);
       if (!mounted) return;
       setState(() => _ready = true);
-      await _controller.play();
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+        await _controller.play();
+        debugPrint(
+          'HeaderVideoBackground: playing=${_controller.value.isPlaying}, '
+          'size=${_controller.value.size}, err=${_controller.value.errorDescription}',
+        );
+      });
     } catch (e) {
       debugPrint('HeaderVideoBackground error: $e');
     }
