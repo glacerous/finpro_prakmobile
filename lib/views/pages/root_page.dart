@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
 import '../../models/user.dart';
+import '../../routes/app_routes.dart';
 import 'home_page.dart';
-import 'lbs_page.dart';
 import 'profile_page.dart';
-import 'vault_page.dart';
+import 'saran_kesan_screen.dart';
+import 'search_radar_screen.dart';
 
 class RootPage extends StatefulWidget {
   const RootPage({super.key});
@@ -19,27 +21,103 @@ class RootPage extends StatefulWidget {
 class _RootPageState extends State<RootPage> {
   int _selectedIndex = 0;
 
+  void _showLogoutConfirmation() {
+    HapticFeedback.mediumImpact();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: VaultColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Confirm Sign Out', style: VaultTypography.sectionTitle),
+              const SizedBox(height: 8),
+              Text(
+                'Are you sure you want to sign out of Vaulted? Your local session will end safely.',
+                style: VaultTypography.sans(fontSize: 12.5, color: VaultColors.ink2),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: VaultColors.hairline),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        Navigator.pop(ctx);
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setBool('loginData', false);
+                        Get.offAllNamed(AppRoutes.login);
+                      },
+                      icon: const Icon(Icons.logout_rounded, size: 16),
+                      label: const Text('Sign Out'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: VaultColors.neg,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildTabItem({
     required int index,
     required String label,
     required IconData icon,
     required IconData activeIcon,
+    bool isAction = false,
+    VoidCallback? onAction,
+    Color? customColor,
   }) {
-    final isSelected = _selectedIndex == index;
+    final isSelected = !isAction && _selectedIndex == index;
     return GestureDetector(
       onTap: () {
-        HapticFeedback.selectionClick();
-        setState(() => _selectedIndex = index);
+        if (isAction && onAction != null) {
+          onAction();
+        } else {
+          HapticFeedback.selectionClick();
+          setState(() => _selectedIndex = index);
+        }
       },
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
               decoration: BoxDecoration(
                 color: isSelected ? VaultColors.cardHover : Colors.transparent,
                 borderRadius: BorderRadius.circular(16),
@@ -47,7 +125,7 @@ class _RootPageState extends State<RootPage> {
               child: Icon(
                 isSelected ? activeIcon : icon,
                 size: 20,
-                color: isSelected ? VaultColors.ink : VaultColors.ink2,
+                color: customColor ?? (isSelected ? VaultColors.ink : VaultColors.ink2),
               ),
             ),
             const SizedBox(height: 3),
@@ -56,7 +134,7 @@ class _RootPageState extends State<RootPage> {
               style: VaultTypography.sans(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? VaultColors.ink : VaultColors.ink2,
+                color: customColor ?? (isSelected ? VaultColors.ink : VaultColors.ink2),
               ),
             ),
           ],
@@ -71,9 +149,9 @@ class _RootPageState extends State<RootPage> {
 
     final List<Widget> pages = [
       HomePage(nama: nama),
-      const VaultPage(),
-      const LbsPage(),
+      const SearchRadarScreen(),
       ProfilePage(nama: nama),
+      const SaranKesanScreen(),
     ];
 
     return Scaffold(
@@ -96,27 +174,36 @@ class _RootPageState extends State<RootPage> {
               children: [
                 _buildTabItem(
                   index: 0,
-                  label: 'Vault',
-                  icon: Icons.shield_outlined,
-                  activeIcon: Icons.shield_rounded,
+                  label: 'Home',
+                  icon: Icons.home_outlined,
+                  activeIcon: Icons.home_rounded,
                 ),
                 _buildTabItem(
                   index: 1,
-                  label: 'Garansi',
-                  icon: Icons.receipt_long_outlined,
-                  activeIcon: Icons.receipt_long_rounded,
+                  label: 'Radar',
+                  icon: Icons.radar_outlined,
+                  activeIcon: Icons.radar_rounded,
                 ),
                 _buildTabItem(
                   index: 2,
-                  label: 'Service',
-                  icon: Icons.build_circle_outlined,
-                  activeIcon: Icons.build_circle_rounded,
-                ),
-                _buildTabItem(
-                  index: 3,
                   label: 'Profile',
                   icon: Icons.person_outline_rounded,
                   activeIcon: Icons.person_rounded,
+                ),
+                _buildTabItem(
+                  index: 3,
+                  label: 'Saran',
+                  icon: Icons.rate_review_outlined,
+                  activeIcon: Icons.rate_review_rounded,
+                ),
+                _buildTabItem(
+                  index: 4,
+                  label: 'Logout',
+                  icon: Icons.logout_rounded,
+                  activeIcon: Icons.logout_rounded,
+                  isAction: true,
+                  onAction: _showLogoutConfirmation,
+                  customColor: VaultColors.neg,
                 ),
               ],
             ),

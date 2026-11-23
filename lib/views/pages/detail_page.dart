@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import '../../controllers/cart_controller.dart';
+import '../../controllers/vault_controller.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
 import '../../core/widgets/vault_back_button.dart';
@@ -127,10 +128,17 @@ class DetailPage extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {
-                      Hive.box<VaultItem>('vault_items').add(
+                      final now = DateTime.now();
+                      final exp = DateTime(now.year + 1, now.month, now.day);
+                      final df = DateFormat('yyyy-MM-dd');
+                      Get.find<VaultController>().addItem(
                         VaultItem(
-                          title: product.title,
-                          subtitle: 'Garansi 1 Thn · \$${product.price}',
+                          name: product.title,
+                          category: 'Hardware',
+                          purchasePrice: product.price,
+                          currentValuation: product.price,
+                          purchaseDate: df.format(now),
+                          warrantyExpiryDate: df.format(exp),
                         ),
                       );
                       VaultToast.show(

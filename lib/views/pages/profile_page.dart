@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../controllers/cart_controller.dart';
+import '../../controllers/vault_controller.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
 import '../../core/widgets/valto_mascot.dart';
 import '../../models/user.dart';
-import '../../models/vault_item.dart';
 import '../../routes/app_routes.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -17,6 +16,7 @@ class ProfilePage extends StatelessWidget {
   ProfilePage({super.key, required this.nama});
 
   final CartController cartController = Get.find<CartController>();
+  final VaultController vaultController = Get.find<VaultController>();
 
   Future<void> _logout() async {
     HapticFeedback.mediumImpact();
@@ -214,12 +214,11 @@ class ProfilePage extends StatelessWidget {
                       value: 'Yogyakarta, ID',
                     ),
                     const Divider(height: 1, color: VaultColors.hairline),
-                    ValueListenableBuilder(
-                      valueListenable: Hive.box<VaultItem>('vault_items').listenable(),
-                      builder: (context, box, _) => _infoRow(
+                    Obx(
+                      () => _infoRow(
                         icon: Icons.lock_outline_rounded,
                         label: 'Warranty Vault',
-                        value: '${box.length} perangkat',
+                        value: '${vaultController.items.length} perangkat',
                       ),
                     ),
                     const Divider(height: 1, color: VaultColors.hairline),

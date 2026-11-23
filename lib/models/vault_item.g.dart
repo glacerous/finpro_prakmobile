@@ -17,19 +17,34 @@ class VaultItemAdapter extends TypeAdapter<VaultItem> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return VaultItem(
-      title: fields[0] as String,
-      subtitle: fields[1] as String,
+      name: fields[0] as String,
+      category: fields[1] as String,
+      purchasePrice: fields[2] as double,
+      currentValuation: fields[3] as double,
+      purchaseDate: fields[4] as String,
+      warrantyExpiryDate: fields[5] as String,
+      serialNumber: fields[6] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, VaultItem obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(7)
       ..writeByte(0)
-      ..write(obj.title)
+      ..write(obj.name)
       ..writeByte(1)
-      ..write(obj.subtitle);
+      ..write(obj.category)
+      ..writeByte(2)
+      ..write(obj.purchasePrice)
+      ..writeByte(3)
+      ..write(obj.currentValuation)
+      ..writeByte(4)
+      ..write(obj.purchaseDate)
+      ..writeByte(5)
+      ..write(obj.warrantyExpiryDate)
+      ..writeByte(6)
+      ..write(obj.serialNumber);
   }
 
   @override
