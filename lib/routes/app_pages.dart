@@ -9,6 +9,7 @@ import '../views/pages/vault_converter_screen.dart';
 import '../views/pages/warranty_lbs_screen.dart';
 import 'app_routes.dart';
 
+// binding otomatis inject controller sebelum halaman root dibuka
 class RootBinding extends Bindings {
   @override
   void dependencies() {

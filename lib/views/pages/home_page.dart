@@ -12,6 +12,14 @@ import '../../routes/app_routes.dart';
 import '../modals/manual_asset_modal.dart';
 
 class HomePage extends StatelessWidget {
+  static const Widget _pillarDivider = Divider(
+    height: 1,
+    thickness: 1,
+    color: VaultColors.hairline,
+    indent: 68,
+    endIndent: 16,
+  );
+
   final String nama;
 
   HomePage({super.key, required this.nama});
@@ -169,63 +177,24 @@ class HomePage extends StatelessWidget {
                                 color: Colors.white,
                               ),
                             ),
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 9,
-                                    vertical: 4.5,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.90),
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: Colors.white),
-                                  ),
-                                  child: Text(
-                                    DateFormat('MMM d').format(now).toUpperCase(),
-                                    style: VaultTypography.mono(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w700,
-                                      color: VaultColors.ink,
-                                    ),
-                                  ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 9,
+                                vertical: 4.5,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.90),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.white),
+                              ),
+                              child: Text(
+                                DateFormat('MMM d').format(now).toUpperCase(),
+                                style: VaultTypography.mono(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: VaultColors.ink,
                                 ),
-                                const SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: () => ManualAssetModal.show(context),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 5,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.90),
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(color: Colors.white),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Icon(
-                                          Icons.add_box_outlined,
-                                          size: 14,
-                                          color: VaultColors.ink,
-                                        ),
-                                        const SizedBox(width: 5),
-                                        Text(
-                                          'ADD ASSET',
-                                          style: VaultTypography.mono(
-                                            fontSize: 9.5,
-                                            fontWeight: FontWeight.w700,
-                                            letterSpacing: 0.8,
-                                            color: VaultColors.ink,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ],
                         ),
@@ -607,13 +576,7 @@ class HomePage extends StatelessWidget {
                               onTap: () => Get.toNamed(AppRoutes.steam),
                             ),
                           ),
-                          const Divider(
-                            height: 1,
-                            thickness: 1,
-                            color: VaultColors.hairline,
-                            indent: 68,
-                            endIndent: 16,
-                          ),
+                          _pillarDivider,
                           Obx(
                             () => _buildPillarRow(
                               icon: Icons.laptop_mac_rounded,
@@ -624,13 +587,7 @@ class HomePage extends StatelessWidget {
                               onTap: () => Get.toNamed(AppRoutes.inventory),
                             ),
                           ),
-                          const Divider(
-                            height: 1,
-                            thickness: 1,
-                            color: VaultColors.hairline,
-                            indent: 68,
-                            endIndent: 16,
-                          ),
+                          _pillarDivider,
                           _buildPillarRow(
                             icon: Icons.near_me_rounded,
                             iconColor: VaultColors.ink2,
@@ -639,13 +596,7 @@ class HomePage extends StatelessWidget {
                             value: 'Radar',
                             onTap: () => Get.toNamed(AppRoutes.lbs),
                           ),
-                          const Divider(
-                            height: 1,
-                            thickness: 1,
-                            color: VaultColors.hairline,
-                            indent: 68,
-                            endIndent: 16,
-                          ),
+                          _pillarDivider,
                           _buildPillarRow(
                             icon: Icons.currency_exchange_rounded,
                             iconColor: VaultColors.accent,

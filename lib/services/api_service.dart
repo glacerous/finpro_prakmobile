@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 class ApiService {
   static const String ratesUrl = 'https://open.er-api.com/v6/latest/USD';
 
+  // ambil kurs mata uang live dari usd, kalau gagal pakai angka fallback
   static Future<Map<String, double>> getExchangeRates() async {
     try {
       final response = await http.get(Uri.parse(ratesUrl));

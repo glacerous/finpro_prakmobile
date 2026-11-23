@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
 import '../../models/user.dart';
-import '../../routes/app_routes.dart';
 import 'home_page.dart';
 import 'profile_page.dart';
 import 'saran_kesan_screen.dart';
@@ -20,75 +18,6 @@ class RootPage extends StatefulWidget {
 
 class _RootPageState extends State<RootPage> {
   int _selectedIndex = 0;
-
-  void _showLogoutConfirmation() {
-    HapticFeedback.mediumImpact();
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: VaultColors.card,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Confirm Sign Out', style: VaultTypography.sectionTitle),
-              const SizedBox(height: 8),
-              Text(
-                'Are you sure you want to sign out of Vaulted? Your local session will end safely.',
-                style: VaultTypography.sans(fontSize: 12.5, color: VaultColors.ink2),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: VaultColors.hairline),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text('Cancel'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () async {
-                        Navigator.pop(ctx);
-                        final prefs = await SharedPreferences.getInstance();
-                        await prefs.setBool('loginData', false);
-                        Get.offAllNamed(AppRoutes.login);
-                      },
-                      icon: const Icon(Icons.logout_rounded, size: 16),
-                      label: const Text('Sign Out'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: VaultColors.neg,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildTabItem({
     required int index,
@@ -156,6 +85,7 @@ class _RootPageState extends State<RootPage> {
 
     return Scaffold(
       backgroundColor: VaultColors.background,
+      // indexedstack menjaga state tiap tab tetap hidup saat pindah tab
       body: IndexedStack(
         index: _selectedIndex,
         children: pages,
@@ -202,7 +132,7 @@ class _RootPageState extends State<RootPage> {
                   icon: Icons.logout_rounded,
                   activeIcon: Icons.logout_rounded,
                   isAction: true,
-                  onAction: _showLogoutConfirmation,
+                  onAction: () => ProfilePage.showLogoutSheet(context),
                   customColor: VaultColors.neg,
                 ),
               ],

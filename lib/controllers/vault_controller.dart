@@ -17,6 +17,7 @@ class VaultController extends GetxController {
     'JPY': 152.4,
   }.obs;
 
+  // dipanggil otomatis saat controller pertama kali diakses lewat get.find()
   @override
   void onInit() {
     super.onInit();
@@ -24,6 +25,7 @@ class VaultController extends GetxController {
     fetchLiveRates();
   }
 
+  // baca semua aset hardware dari box hive ke list reaktif
   void loadItems() {
     items.assignAll(_box.values.toList());
   }
@@ -33,6 +35,7 @@ class VaultController extends GetxController {
     exchangeRates.assignAll(rates);
   }
 
+  // operasi crud hive: tambah, ubah berdasarkan index, hapus berdasarkan index
   Future<void> addItem(VaultItem item) async {
     await _box.add(item);
     loadItems();

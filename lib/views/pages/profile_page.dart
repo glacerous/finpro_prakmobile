@@ -18,14 +18,14 @@ class ProfilePage extends StatelessWidget {
   final SteamController steamController = Get.find<SteamController>();
   final VaultController vaultController = Get.find<VaultController>();
 
-  Future<void> _logout() async {
+  static Future<void> _logout() async {
     HapticFeedback.mediumImpact();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('loginData', false);
     Get.offAllNamed(AppRoutes.login);
   }
 
-  void _showLogoutSheet(BuildContext context) {
+  static void showLogoutSheet(BuildContext context) {
     HapticFeedback.mediumImpact();
     showModalBottomSheet(
       context: context,
@@ -238,7 +238,7 @@ class ProfilePage extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: () => _showLogoutSheet(context),
+                  onPressed: () => showLogoutSheet(context),
                   icon: const Icon(Icons.logout_rounded),
                   label: const Text('Lock & Logout'),
                   style: ElevatedButton.styleFrom(

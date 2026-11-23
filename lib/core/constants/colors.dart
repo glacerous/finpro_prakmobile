@@ -27,7 +27,6 @@ class VaultColors {
   static const Color accent = Color(0xFFC0A85C);     // Signature Alpine Warm Gold
   static const Color accentWarm = Color(0xFFD97706); // Warm amber secondary
   static const Color badgeBg = Color(0xFFFEF3C7);    // Soft warm gold badge pill
-  static const Color toastBg = Color(0xFF1D1D1B);    // Premium deep dark titanium for toasts/modals
 
   // Primary Action Button (Jet Black with Crisp White Text like Oyenza CTA)
   static const Color primaryButton = Color(0xFF141413);
@@ -37,7 +36,6 @@ class VaultColors {
   static const Color pos = Color(0xFF16A34A);        // Positive gain green
   static const Color posBg = Color(0xFFDCFCE7);      // Soft green badge background
   static const Color neg = Color(0xFFDC2626);        // Negative loss red
-  static const Color negBg = Color(0xFFFEE2E2);      // Soft red badge background
   static const Color warn = Color(0xFFD97706);       // Amber warning
   static const Color warnBg = Color(0xFFFEF3C7);     // Soft amber background
 
@@ -45,21 +43,6 @@ class VaultColors {
   static const Color sunsetTop = Color(0xFFFFF6EE);     // Soft warm peach glow
   static const Color sunsetMid = Color(0xFFFFF1E4);     // Delicate apricot wash
   static const Color sunsetBottom = Color(0xFFFAF9F6);  // Fades seamlessly into porcelain
-  static const Color sunsetHaze = Color(0xFFFFFAF5);
-
-  // Mascot Tokens
-  static const Color vowlCharcoal = Color(0xFF2C2A28);
-  static const Color vowlGold = Color(0xFFD97706);
-  static const Color vowlCream = Color(0xFFF7F5EE);
-
-  // Backwards-compatible aliases
-  static const Color valtoOrange = vowlGold;
-  static const Color valtoLight = vowlCream;
-  static const Color valtoGold = vowlGold;
-
-  // Soft Frosted Glass for Light Mode
-  static Color glassBg = Colors.white.withValues(alpha: 0.85);
-  static Color glassBorder = const Color(0xFF141413).withValues(alpha: 0.08);
 }
 
 /// Universal Toast & SnackBar Utility for consistent contrast across VAULTED
@@ -102,4 +85,3 @@ class VaultToast {
     );
   }
 }
-

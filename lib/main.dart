@@ -8,6 +8,7 @@ import 'routes/app_routes.dart';
 import 'services/notification_service.dart';
 
 void main() async {
+  // wajib dipanggil sebelum init plugin async (hive & notifikasi)
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(VaultItemAdapter());
@@ -22,6 +23,7 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // pakai getmaterialapp biar fitur getx (routing & controller) jalan
     return GetMaterialApp(
       title: 'VAULTED',
       debugShowCheckedModeBanner: false,

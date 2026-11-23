@@ -44,12 +44,6 @@ class VaultTypography {
   }
 
   // Pre-configured text styles matching Vantis Vault
-  static TextStyle get heroTotal => mono(
-    fontSize: 34,
-    fontWeight: FontWeight.w500,
-    letterSpacing: -0.02,
-  );
-
   static TextStyle get sectionTitle => sans(
     fontSize: 16,
     fontWeight: FontWeight.w600,
@@ -66,13 +60,6 @@ class VaultTypography {
     fontSize: 11,
     fontWeight: FontWeight.w400,
     color: VaultColors.ink2,
-  );
-
-  static TextStyle get cardDescription => sans(
-    fontSize: 11.5,
-    fontWeight: FontWeight.w400,
-    color: VaultColors.body,
-    height: 1.4,
   );
 
   static TextStyle get badgeLabel => mono(
