@@ -7,7 +7,6 @@ import '../../controllers/steam_controller.dart';
 import '../../controllers/vault_controller.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/typography.dart';
-import '../../core/widgets/header_video_background.dart';
 import '../../core/widgets/valto_mascot.dart';
 import '../../routes/app_routes.dart';
 import '../modals/manual_asset_modal.dart';
@@ -127,12 +126,13 @@ class HomePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // 1. SCENIC ALPINE DAWN HEADER (Drop assets/videos/header.mp4 to animate)
+            // 1. SCENIC ALPINE DAWN HEADER
             Stack(
               children: [
-                const Positioned.fill(
-                  child: HeaderVideoBackground(
-                    videoAsset: 'assets/videos/header.mp4',
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/dither_landscape.png',
+                    fit: BoxFit.cover,
                   ),
                 ),
                 Positioned.fill(
