@@ -48,13 +48,27 @@ class SteamController extends GetxController {
       syncStatus.value = 'Fallback Cache (Web CORS / Private)';
     }
 
-    // Update top 5 market prices
-    final limit = assets.length > 5 ? 5 : assets.length;
-    for (int i = 0; i < limit; i++) {
-      final live = await SteamMarketService.fetchLivePrice(assets[i].marketHashName);
+    // Fetch real Steam Market prices for all marketable items (deduplicated by appId + hash)
+    final fetchedKeys = <String>{};
+    for (int i = 0; i < assets.length; i++) {
+      final item = assets[i];
+      if (!item.marketable) continue;
+      final key = '${item.appId}_${item.marketHashName}';
+      if (!fetchedKeys.add(key)) continue;
+
+      final live = await SteamMarketService.fetchLivePrice(
+        item.marketHashName,
+        appId: item.appId,
+      );
       if (live != null) {
-        assets[i] = assets[i].copyWith(priceUsd: live);
+        for (int j = 0; j < assets.length; j++) {
+          if (assets[j].appId == item.appId &&
+              assets[j].marketHashName == item.marketHashName) {
+            assets[j] = assets[j].copyWith(priceUsd: live);
+          }
+        }
       }
+      await Future.delayed(const Duration(milliseconds: 120));
     }
     isRefreshing.value = false;
   }

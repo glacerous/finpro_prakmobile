@@ -4,6 +4,8 @@ class SteamAsset {
   final String marketHashName;
   final String imageUrl;
   final double priceUsd;
+  final int appId;
+  final bool marketable;
 
   SteamAsset({
     required this.name,
@@ -11,6 +13,8 @@ class SteamAsset {
     required this.marketHashName,
     required this.imageUrl,
     required this.priceUsd,
+    this.appId = 730,
+    this.marketable = true,
   });
 
   SteamAsset copyWith({double? priceUsd}) => SteamAsset(
@@ -19,6 +23,8 @@ class SteamAsset {
         marketHashName: marketHashName,
         imageUrl: imageUrl,
         priceUsd: priceUsd ?? this.priceUsd,
+        appId: appId,
+        marketable: marketable,
       );
 }
 
