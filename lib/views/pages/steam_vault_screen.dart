@@ -12,6 +12,65 @@ class SteamVaultScreen extends StatelessWidget {
   final SteamController steamController = Get.find<SteamController>();
   final VaultController vaultController = Get.find<VaultController>();
 
+  void _showSteamIdSheet(BuildContext context) {
+    final ctrl = TextEditingController(text: steamController.steamId.value);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: VaultColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('Connect Steam Account', style: VaultTypography.sectionTitle),
+            const SizedBox(height: 6),
+            Text(
+              'Masukkan SteamID64 publik kamu untuk sinkronisasi inventaris CS2 & Steam.',
+              style: VaultTypography.cardSub,
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: ctrl,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'SteamID64 (17 digit)',
+                hintText: '76561199089584380',
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.pop(ctx);
+                steamController.syncAccount(ctrl.text);
+              },
+              icon: const Icon(Icons.sync_rounded),
+              label: const Text('Sync Steam Inventory'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: VaultColors.primaryButton,
+                foregroundColor: VaultColors.primaryButtonInk,
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,6 +81,11 @@ class SteamVaultScreen extends StatelessWidget {
         leading: const VaultBackButton(),
         title: Text('Steam & Gaming Vault', style: VaultTypography.sectionTitle),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.link_rounded, color: VaultColors.ink),
+            tooltip: 'Ganti SteamID64',
+            onPressed: () => _showSteamIdSheet(context),
+          ),
           Obx(
             () => IconButton(
               icon: steamController.isRefreshing.value
@@ -36,7 +100,7 @@ class SteamVaultScreen extends StatelessWidget {
                   : const Icon(Icons.refresh_rounded, color: VaultColors.ink),
               onPressed: steamController.isRefreshing.value
                   ? null
-                  : steamController.refreshLivePrices,
+                  : () => steamController.syncAccount(steamController.steamId.value),
             ),
           ),
         ],
@@ -56,13 +120,29 @@ class SteamVaultScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'STEAM COMMUNITY MARKET',
-                      style: VaultTypography.mono(
-                        fontSize: 10,
-                        letterSpacing: 1.4,
-                        color: VaultColors.accent,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'STEAM ID · ${steamController.steamId.value}',
+                          style: VaultTypography.mono(
+                            fontSize: 10,
+                            letterSpacing: 1.1,
+                            color: VaultColors.accent,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => _showSteamIdSheet(context),
+                          child: Text(
+                            'GANTI ID',
+                            style: VaultTypography.mono(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -75,7 +155,7 @@ class SteamVaultScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${steamController.assets.length} CS2 items synced',
+                      steamController.syncStatus.value,
                       style: VaultTypography.sans(fontSize: 11, color: VaultColors.ink3),
                     ),
                   ],
